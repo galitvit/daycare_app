@@ -1,0 +1,36 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "daycareapp-2b3b0",
+          "appId": "1:396440535539:android:78db3ef2209d5283109286",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "daycareapp-2b3b0",
+          "configurations": {
+            "android": "1:396440535539:android:78db3ef2209d5283109286",
+            "web": "1:396440535539:web:919ae177e104640a109286"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
