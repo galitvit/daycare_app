@@ -203,12 +203,31 @@ class _AuthScreenState extends State<AuthScreen> {
                     width: double.infinity,
                     height: 50,
                     child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black87, // Dark text for readability
+                        side: BorderSide(color: Colors.grey.shade300), // Subtle border
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8), // Slightly rounded corners
+                        ),
+                      ),
                       onPressed: _signInWithGoogle,
-                      icon: const Icon(Icons.g_mobiledata, size: 28),
-                      label: const Text('Continue with Google'),
+                      // Pulling the colorful "G" directly from the web
+                      icon: Image.asset(
+                        'assets/google_720255.png',
+                        height: 24,
+                        width: 24,
+                      ),
+                      label: const Text(
+                        'Continue with Google',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
                     ),
                   ),
-            TextButton(onPressed: () => setState(() => _isLogin = !_isLogin), child: Text(_isLogin ? 'Create an account' : 'I already have an account'))
+            TextButton(
+              onPressed: () => setState(() => _isLogin = !_isLogin), 
+              child: Text(_isLogin ? 'Create an account' : 'I already have an account')
+            )
           ],
         ),
       ),
