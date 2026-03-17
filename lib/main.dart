@@ -1,8 +1,10 @@
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -72,6 +74,78 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _isLogin = true; 
   bool _isLoading = false;
 
+  Future<void> _upsertUserProfile(User user, {String? phone}) async {
+    final email = (user.email ?? '').trim().toLowerCase();
+    if (email.isEmpty) {
+      throw FirebaseAuthException(code: 'missing-email', message: 'This account does not have a valid email address.');
+    }
+
+    final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final userDoc = await userRef.get();
+
+    if (userDoc.exists) {
+      final updates = <String, dynamic>{'email': email};
+      if (phone != null && phone.isNotEmpty) {
+        updates['phone'] = phone;
+      }
+      await userRef.set(updates, SetOptions(merge: true));
+      return;
+    }
+
+    final inviteDoc = await FirebaseFirestore.instance.collection('teacher_invites').doc(email).get();
+    String assignedRole = 'parent';
+    String? assignedDaycareId;
+
+    if (inviteDoc.exists) {
+      assignedRole = 'teacher';
+      assignedDaycareId = inviteDoc.data()?['daycare_id'];
+      await inviteDoc.reference.delete();
+    }
+
+    await userRef.set({
+      'email': email,
+      'phone': phone,
+      'role': assignedRole,
+      'daycare_id': assignedDaycareId,
+      'created_at': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() => _isLoading = true);
+    try {
+      UserCredential userCredential;
+
+      if (kIsWeb) {
+        userCredential = await FirebaseAuth.instance.signInWithPopup(GoogleAuthProvider());
+      } else {
+        final googleUser = await GoogleSignIn().signIn();
+        if (googleUser == null) {
+          return;
+        }
+
+        final googleAuth = await googleUser.authentication;
+        final credential = GoogleAuthProvider.credential(accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+        userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      }
+
+      final user = userCredential.user;
+      if (user != null) {
+        await _upsertUserProfile(user);
+      }
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? 'Google sign-in failed')));
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Google sign-in is not available on this device.')));
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   Future<void> _submitAuth() async {
     final email = _emailController.text.trim().toLowerCase();
     final password = _passwordController.text.trim();
@@ -88,24 +162,7 @@ class _AuthScreenState extends State<AuthScreen> {
         await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       } else {
         final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-        final inviteDoc = await FirebaseFirestore.instance.collection('teacher_invites').doc(email).get();
-        
-        String assignedRole = 'parent';
-        String? assignedDaycareId;
-
-        if (inviteDoc.exists) {
-          assignedRole = 'teacher';
-          assignedDaycareId = inviteDoc.data()?['daycare_id'];
-          await inviteDoc.reference.delete();
-        }
-
-        await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
-          'email': email,
-          'phone': phone, // NEW
-          'role': assignedRole,
-          'daycare_id': assignedDaycareId,
-          'created_at': FieldValue.serverTimestamp(),
-        });
+        await _upsertUserProfile(userCredential.user!, phone: phone);
       }
     } on FirebaseAuthException catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? 'Error')));
@@ -139,6 +196,18 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
             const SizedBox(height: 24),
             _isLoading ? const CircularProgressIndicator() : SizedBox(width: double.infinity, height: 50, child: ElevatedButton(onPressed: _submitAuth, child: Text(_isLogin ? 'Login' : 'Sign Up'))),
+            const SizedBox(height: 12),
+            _isLoading
+                ? const SizedBox.shrink()
+                : SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: OutlinedButton.icon(
+                      onPressed: _signInWithGoogle,
+                      icon: const Icon(Icons.g_mobiledata, size: 28),
+                      label: const Text('Continue with Google'),
+                    ),
+                  ),
             TextButton(onPressed: () => setState(() => _isLogin = !_isLogin), child: Text(_isLogin ? 'Create an account' : 'I already have an account'))
           ],
         ),
@@ -292,11 +361,13 @@ class TeacherDashboard extends StatelessWidget {
   }
 
   // --- 2. EDIT CHILD DIALOG (New Feature) ---
-  void _showEditChildDialog(BuildContext context, String childId, String currentName, List<dynamic>? currentPhones) {
+  void _showEditChildDialog(BuildContext context, String childId, String currentName, List<dynamic>? currentPhones, List<dynamic>? currentEmails) {
     final nameController = TextEditingController(text: currentName);
     // Grab the first phone if it exists
     final initialPhone = (currentPhones != null && currentPhones.isNotEmpty) ? currentPhones.first.toString() : "";
     final phoneController = TextEditingController(text: initialPhone);
+    final initialEmail = (currentEmails != null && currentEmails.isNotEmpty) ? currentEmails.first.toString() : "";
+    final emailController = TextEditingController(text: initialEmail);
 
     showDialog(
       context: context,
@@ -308,6 +379,8 @@ class TeacherDashboard extends StatelessWidget {
             TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Child Name')),
             const SizedBox(height: 16),
             TextField(controller: phoneController, decoration: const InputDecoration(labelText: 'Parent Phone (e.g. 15551234567)')),
+            const SizedBox(height: 16),
+            TextField(controller: emailController, decoration: const InputDecoration(labelText: 'Parent Email (e.g. parent@example.com)')),
           ],
         ),
         actions: [
@@ -318,6 +391,7 @@ class TeacherDashboard extends StatelessWidget {
                 await FirebaseFirestore.instance.collection('children').doc(childId).update({
                   'name': nameController.text.trim(),
                   'parent_phones': phoneController.text.isEmpty ? [] : [phoneController.text.trim()],
+                  'parent_emails': emailController.text.isEmpty ? [] : [emailController.text.trim()],
                 });
                 if (context.mounted) Navigator.pop(context);
               }
@@ -510,7 +584,7 @@ class TeacherDashboard extends StatelessWidget {
                     child: ListTile(
                       leading: IconButton(
                         icon: const Icon(Icons.edit, size: 20, color: Colors.grey),
-                        onPressed: () => _showEditChildDialog(context, child.id, childData['name'], parentPhones),
+                        onPressed: () => _showEditChildDialog(context, child.id, childData['name'], parentPhones, childData['parent_emails']),
                       ),
                       title: Text(childData['name'] ?? 'Unknown', style: const TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text('Parents: ${(childData['parent_emails'] as List<dynamic>?)?.join(', ') ?? 'None'}'),
