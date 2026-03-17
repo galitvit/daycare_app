@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -202,26 +203,10 @@ class _AuthScreenState extends State<AuthScreen> {
                 : SizedBox(
                     width: double.infinity,
                     height: 50,
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black87, // Dark text for readability
-                        side: BorderSide(color: Colors.grey.shade300), // Subtle border
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8), // Slightly rounded corners
-                        ),
-                      ),
+                    child: SignInButton(
+                      Buttons.google,
+                      text: 'Continue with Google',
                       onPressed: _signInWithGoogle,
-                      // Pulling the colorful "G" directly from the web
-                      icon: Image.asset(
-                        'assets/google_720255.png',
-                        height: 24,
-                        width: 24,
-                      ),
-                      label: const Text(
-                        'Continue with Google',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                      ),
                     ),
                   ),
             TextButton(
