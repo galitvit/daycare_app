@@ -1,11 +1,11 @@
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_button/sign_in_button.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -14,17 +14,252 @@ void main() async {
   runApp(const DaycareApp());
 }
 
-class DaycareApp extends StatelessWidget {
+class DaycareApp extends StatefulWidget {
   const DaycareApp({super.key});
+
+  static _DaycareAppState of(BuildContext context) {
+    final state = context.findAncestorStateOfType<_DaycareAppState>();
+    assert(state != null, 'DaycareApp state not found in context');
+    return state!;
+  }
+
+  @override
+  State<DaycareApp> createState() => _DaycareAppState();
+}
+
+class _DaycareAppState extends State<DaycareApp> {
+  Locale _locale = const Locale('en');
+
+  Locale get locale => _locale;
+
+  void toggleLanguage() {
+    setState(() {
+      _locale = _locale.languageCode == 'en' ? const Locale('he') : const Locale('en');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations(_locale);
     return MaterialApp(
-      title: 'Daycare App',
+      title: l10n.tr('daycareApp'),
       theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal), useMaterial3: true),
+      locale: _locale,
+      supportedLocales: const [Locale('en'), Locale('he')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: const AuthRouter(),
     );
   }
+}
+
+class AppLocalizations {
+  AppLocalizations(this.locale);
+
+  final Locale locale;
+
+  bool get isHebrew => locale.languageCode == 'he';
+
+  static AppLocalizations of(BuildContext context) {
+    return AppLocalizations(DaycareApp.of(context).locale);
+  }
+
+  String tr(String key, [Map<String, String>? params]) {
+    var value = (_values[locale.languageCode] ?? _values['en']!) [key] ?? _values['en']![key] ?? key;
+    if (params != null) {
+      for (final entry in params.entries) {
+        value = value.replaceAll('{${entry.key}}', entry.value);
+      }
+    }
+    return value;
+  }
+
+  String activityType(String type) {
+    const knownTypes = {
+      'Incident': 'incident',
+      'Nap': 'nap',
+      'Meal': 'meal',
+      'Daily Summary': 'dailySummary',
+      'Update': 'update',
+    };
+    final key = knownTypes[type];
+    return key == null ? type : tr(key);
+  }
+
+  String activityDetails(String details) {
+    const knownDetails = {
+      'Woke up': 'wokeUp',
+      'Sleeping': 'sleeping',
+      'Ate meal': 'ateMeal',
+    };
+    final key = knownDetails[details];
+    return key == null ? details : tr(key);
+  }
+
+  static const Map<String, Map<String, String>> _values = {
+    'en': {
+      'daycareApp': 'Daycare App',
+      'checkingPermissions': 'Checking permissions...',
+      'signOut': 'Sign Out',
+      'missingEmail': 'This account does not have a valid email address.',
+      'googleSignInFailed': 'Google sign-in failed',
+      'googleSignInUnavailable': 'Google sign-in is not available on this device.',
+      'allFieldsMandatory': 'All fields are mandatory!',
+      'genericError': 'Error',
+      'login': 'Login',
+      'signUp': 'Sign Up',
+      'email': 'Email',
+      'phoneNumber': 'Phone Number (with country code, e.g. 15551234567)',
+      'password': 'Password',
+      'loginWithGoogle': 'Login with Google',
+      'signUpWithGoogle': 'Sign Up with Google',
+      'createAccount': 'Create an account',
+      'alreadyHaveAccount': 'I already have an account',
+      'inviteTeacherTo': 'Invite Teacher to {daycareName}',
+      'teacherEmail': 'Teacher Email',
+      'cancel': 'Cancel',
+      'sendInvite': 'Send Invite',
+      'adminDashboard': 'Admin Dashboard',
+      'newDaycare': 'New Daycare',
+      'daycareName': 'Daycare Name',
+      'create': 'Create',
+      'addDaycare': 'Add Daycare',
+      'teachers': 'Teachers',
+      'invite': 'Invite',
+      'editChild': 'Edit {name}',
+      'childName': 'Child Name',
+      'parentPhoneExample': 'Parent Phone (e.g. 15551234567)',
+      'parentEmailExample': 'Parent Email (e.g. parent@example.com)',
+      'saveChanges': 'Save Changes',
+      'incidentTitle': 'Incident: {childName}',
+      'whatHappened': 'What happened?',
+      'save': 'Save',
+      'dailyReportTitle': 'Daily Report: {childName}',
+      'whatsApp': 'WhatsApp',
+      'saveToApp': 'Save to App',
+      'logForChild': 'Log for {childName}',
+      'generateDailyReport': 'Generate Daily Report',
+      'endNap': 'End Nap',
+      'startNap': 'Start Nap',
+      'logMeal': 'Log Meal',
+      'incidentReport': 'Incident Report',
+      'addChild': 'Add Child',
+      'nameRequired': 'Name *',
+      'parentEmailRequired': 'Parent Email *',
+      'parentPhone': 'Parent Phone',
+      'teacherDashboard': 'Teacher Dashboard',
+      'unknown': 'Unknown',
+      'parents': 'Parents: {parents}',
+      'none': 'None',
+      'myChildren': 'My Children',
+      'noChildrenLinked': 'No children linked to {email}. Please ask the teacher to add your email to your child\'s profile.',
+      'tapToViewActivity': 'Tap to view today\'s activity',
+      'noActivitiesForDay': 'No activities for this day.',
+      'dailySummary': 'Daily Summary',
+      'postedAt': 'Posted at {time}',
+      'summaryForDay': 'Summary for {childName}\'s day:\n\n',
+      'mealAte': 'Ate meal',
+      'napSleeping': 'Sleeping',
+      'napWokeUp': 'Woke up',
+      'incident': 'Incident',
+      'nap': 'Nap',
+      'meal': 'Meal',
+      'update': 'Update',
+      'wokeUp': 'Woke up',
+      'sleeping': 'Sleeping',
+      'ateMeal': 'Ate meal',
+      'languageToggle': 'עב',
+    },
+    'he': {
+      'daycareApp': 'אפליקציית מעון',
+      'checkingPermissions': 'בודק הרשאות...',
+      'signOut': 'התנתק',
+      'missingEmail': 'לחשבון הזה אין כתובת אימייל תקינה.',
+      'googleSignInFailed': 'ההתחברות עם גוגל נכשלה',
+      'googleSignInUnavailable': 'ההתחברות עם גוגל אינה זמינה במכשיר הזה.',
+      'allFieldsMandatory': 'כל השדות הם חובה!',
+      'genericError': 'שגיאה',
+      'login': 'התחברות',
+      'signUp': 'הרשמה',
+      'email': 'אימייל',
+      'phoneNumber': 'מספר טלפון (עם קידומת מדינה, לדוגמה 15551234567)',
+      'password': 'סיסמה',
+      'loginWithGoogle': 'התחברות עם גוגל',
+      'signUpWithGoogle': 'הרשמה עם גוגל',
+      'createAccount': 'צור חשבון',
+      'alreadyHaveAccount': 'כבר יש לי חשבון',
+      'inviteTeacherTo': 'הזמן מורה ל־{daycareName}',
+      'teacherEmail': 'אימייל המורה',
+      'cancel': 'ביטול',
+      'sendInvite': 'שלח הזמנה',
+      'adminDashboard': 'לוח ניהול',
+      'newDaycare': 'מעון חדש',
+      'daycareName': 'שם המעון',
+      'create': 'צור',
+      'addDaycare': 'הוסף מעון',
+      'teachers': 'מורים',
+      'invite': 'הזמן',
+      'editChild': 'ערוך את {name}',
+      'childName': 'שם הילד',
+      'parentPhoneExample': 'טלפון הורה (לדוגמה 15551234567)',
+      'parentEmailExample': 'אימייל הורה (לדוגמה parent@example.com)',
+      'saveChanges': 'שמור שינויים',
+      'incidentTitle': 'תקרית: {childName}',
+      'whatHappened': 'מה קרה?',
+      'save': 'שמור',
+      'dailyReportTitle': 'דוח יומי: {childName}',
+      'whatsApp': 'וואטסאפ',
+      'saveToApp': 'שמור באפליקציה',
+      'logForChild': 'רישום עבור {childName}',
+      'generateDailyReport': 'צור דוח יומי',
+      'endNap': 'סיום שינה',
+      'startNap': 'התחל שינה',
+      'logMeal': 'רשום ארוחה',
+      'incidentReport': 'דיווח תקרית',
+      'addChild': 'הוסף ילד',
+      'nameRequired': 'שם *',
+      'parentEmailRequired': 'אימייל הורה *',
+      'parentPhone': 'טלפון הורה',
+      'teacherDashboard': 'לוח מורה',
+      'unknown': 'לא ידוע',
+      'parents': 'הורים: {parents}',
+      'none': 'אין',
+      'myChildren': 'הילדים שלי',
+      'noChildrenLinked': 'אין ילדים שמקושרים ל־{email}. בקש מהמורה להוסיף את האימייל שלך לפרופיל הילד.',
+      'tapToViewActivity': 'הקש לצפייה בפעילות של היום',
+      'noActivitiesForDay': 'אין פעילויות ליום זה.',
+      'dailySummary': 'סיכום יומי',
+      'postedAt': 'פורסם ב־{time}',
+      'summaryForDay': 'סיכום היום של {childName}:\n\n',
+      'mealAte': 'אכל ארוחה',
+      'napSleeping': 'ישן',
+      'napWokeUp': 'התעורר',
+      'incident': 'תקרית',
+      'nap': 'שינה',
+      'meal': 'ארוחה',
+      'update': 'עדכון',
+      'wokeUp': 'התעורר',
+      'sleeping': 'ישן',
+      'ateMeal': 'אכל ארוחה',
+      'languageToggle': 'EN',
+    },
+  };
+}
+
+Widget languageToggleAction(BuildContext context, {Color? color}) {
+  final appState = DaycareApp.of(context);
+  final l10n = AppLocalizations.of(context);
+  return TextButton(
+    onPressed: appState.toggleLanguage,
+    style: TextButton.styleFrom(
+      foregroundColor: color ?? Theme.of(context).colorScheme.onSurface,
+      textStyle: const TextStyle(fontWeight: FontWeight.bold),
+    ),
+    child: Text(l10n.tr('languageToggle')),
+  );
 }
 
 // --- THE ROUTER ---
@@ -33,6 +268,7 @@ class AuthRouter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, authSnapshot) {
@@ -43,9 +279,18 @@ class AuthRouter extends StatelessWidget {
         return StreamBuilder<DocumentSnapshot>(
           stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
           builder: (context, userSnapshot) {
-            if (userSnapshot.connectionState == ConnectionState.waiting) return const Scaffold(body: Center(child: Text('Checking permissions...')));
+            if (userSnapshot.connectionState == ConnectionState.waiting) {
+              return Scaffold(body: Center(child: Text(l10n.tr('checkingPermissions'))));
+            }
             if (userSnapshot.hasError || !userSnapshot.hasData || !userSnapshot.data!.exists) {
-              return Scaffold(body: Center(child: ElevatedButton(onPressed: () => FirebaseAuth.instance.signOut(), child: const Text('Sign Out'))));
+              return Scaffold(
+                body: Center(
+                  child: ElevatedButton(
+                    onPressed: () => FirebaseAuth.instance.signOut(),
+                    child: Text(l10n.tr('signOut')),
+                  ),
+                ),
+              );
             }
 
             final userData = userSnapshot.data!.data() as Map<String, dynamic>;
@@ -78,7 +323,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Future<void> _upsertUserProfile(User user, {String? phone}) async {
     final email = (user.email ?? '').trim().toLowerCase();
     if (email.isEmpty) {
-      throw FirebaseAuthException(code: 'missing-email', message: 'This account does not have a valid email address.');
+      throw FirebaseAuthException(code: 'missing-email');
     }
 
     final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
@@ -113,6 +358,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _signInWithGoogle() async {
+    final l10n = AppLocalizations.of(context);
     setState(() => _isLoading = true);
     try {
       UserCredential userCredential;
@@ -136,11 +382,13 @@ class _AuthScreenState extends State<AuthScreen> {
       }
     } on FirebaseAuthException catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? 'Google sign-in failed')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_authErrorMessage(e, l10n, fallbackKey: 'googleSignInFailed'))),
+        );
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Google sign-in is not available on this device.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('googleSignInUnavailable'))));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -148,12 +396,13 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _submitAuth() async {
+    final l10n = AppLocalizations.of(context);
     final email = _emailController.text.trim().toLowerCase();
     final password = _passwordController.text.trim();
     final phone = _phoneController.text.trim();
 
     if (!_isLogin && (email.isEmpty || password.isEmpty || phone.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('All fields are mandatory!')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('allFieldsMandatory'))));
       return;
     }
 
@@ -166,16 +415,34 @@ class _AuthScreenState extends State<AuthScreen> {
         await _upsertUserProfile(userCredential.user!, phone: phone);
       }
     } on FirebaseAuthException catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? 'Error')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_authErrorMessage(e, l10n, fallbackKey: 'genericError'))),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
+  String _authErrorMessage(FirebaseAuthException error, AppLocalizations l10n, {required String fallbackKey}) {
+    switch (error.code) {
+      case 'missing-email':
+        return l10n.tr('missingEmail');
+      default:
+        return error.message ?? l10n.tr(fallbackKey);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(_isLogin ? 'Login' : 'Sign Up')),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(_isLogin ? l10n.tr('login') : l10n.tr('signUp')),
+        actions: [languageToggleAction(context)],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -183,35 +450,81 @@ class _AuthScreenState extends State<AuthScreen> {
           children: [
             const Icon(Icons.family_restroom, size: 80, color: Colors.teal),
             const SizedBox(height: 32),
-            TextField(controller: _emailController, decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder())),
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(labelText: l10n.tr('email'), border: const OutlineInputBorder()),
+            ),
             const SizedBox(height: 16),
-            if (!_isLogin) ...[ // Only show phone field on Sign Up
-              TextField(controller: _phoneController, decoration: const InputDecoration(labelText: 'Phone Number (with country code, e.g. 15551234567)', border: OutlineInputBorder())),
+            if (!_isLogin) ...[
+              TextField(
+                controller: _phoneController,
+                decoration: InputDecoration(labelText: l10n.tr('phoneNumber'), border: const OutlineInputBorder()),
+              ),
               const SizedBox(height: 16),
             ],
             TextField(
               controller: _passwordController, 
-              decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()), 
+              decoration: InputDecoration(labelText: l10n.tr('password'), border: const OutlineInputBorder()), 
               obscureText: true,
               onSubmitted: (_) => _submitAuth(),
             ),
             const SizedBox(height: 24),
-            _isLoading ? const CircularProgressIndicator() : SizedBox(width: double.infinity, height: 50, child: ElevatedButton(onPressed: _submitAuth, child: Text(_isLogin ? 'Login' : 'Sign Up'))),
+            _isLoading
+                ? const CircularProgressIndicator()
+                : SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _submitAuth,
+                      child: Text(_isLogin ? l10n.tr('login') : l10n.tr('signUp')),
+                    ),
+                  ),
             const SizedBox(height: 12),
             _isLoading
                 ? const SizedBox.shrink()
                 : SizedBox(
                     width: double.infinity,
                     height: 50,
-                    child: SignInButton(
-                      Buttons.google,
-                      text: 'Continue with Google',
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color.fromRGBO(0, 0, 0, 0.9),
+                        side: BorderSide(color: Colors.grey.shade300),
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                      ),
                       onPressed: _signInWithGoogle,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: Image(
+                              image: AssetImage(
+                                'assets/logos/google_light.png',
+                                package: 'sign_in_button',
+                              ),
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            _isLogin ? l10n.tr('loginWithGoogle') : l10n.tr('signUpWithGoogle'),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
             TextButton(
               onPressed: () => setState(() => _isLogin = !_isLogin), 
-              child: Text(_isLogin ? 'Create an account' : 'I already have an account')
+              child: Text(_isLogin ? l10n.tr('createAccount') : l10n.tr('alreadyHaveAccount'))
             )
           ],
         ),
@@ -244,14 +557,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   void _showInviteTeacherDialog(String daycareId, String daycareName) {
+    final l10n = AppLocalizations.of(context);
     final emailController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Invite Teacher to $daycareName'),
-        content: TextField(controller: emailController, decoration: const InputDecoration(labelText: 'Teacher Email', border: OutlineInputBorder())),
+        title: Text(l10n.tr('inviteTeacherTo', {'daycareName': daycareName})),
+        content: TextField(
+          controller: emailController,
+          decoration: InputDecoration(labelText: l10n.tr('teacherEmail'), border: const OutlineInputBorder()),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.tr('cancel'))),
           ElevatedButton(
             onPressed: () async {
               final email = emailController.text.trim().toLowerCase();
@@ -264,7 +581,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 if (context.mounted) Navigator.pop(context);
               }
             },
-            child: const Text('Send Invite'),
+            child: Text(l10n.tr('sendInvite')),
           )
         ],
       ),
@@ -273,22 +590,28 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final user = FirebaseAuth.instance.currentUser!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Dashboard'), backgroundColor: Colors.purple, foregroundColor: Colors.white, actions: [IconButton(icon: const Icon(Icons.logout), onPressed: () => FirebaseAuth.instance.signOut())]),
+      appBar: AppBar(
+        title: Text(l10n.tr('adminDashboard')),
+        backgroundColor: Colors.purple,
+        foregroundColor: Colors.white,
+        actions: [languageToggleAction(context, color: Colors.white), IconButton(icon: const Icon(Icons.logout), onPressed: () => FirebaseAuth.instance.signOut())],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('New Daycare'),
-            content: TextField(controller: _daycareNameController, decoration: const InputDecoration(labelText: 'Daycare Name')),
+            title: Text(l10n.tr('newDaycare')),
+            content: TextField(controller: _daycareNameController, decoration: InputDecoration(labelText: l10n.tr('daycareName'))),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-              ElevatedButton(onPressed: _addDaycare, child: const Text('Create')),
+              TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.tr('cancel'))),
+              ElevatedButton(onPressed: _addDaycare, child: Text(l10n.tr('create'))),
             ],
           ),
         ),
-        label: const Text('Add Daycare', style: TextStyle(color: Colors.white)),
+        label: Text(l10n.tr('addDaycare'), style: const TextStyle(color: Colors.white)),
         icon: const Icon(Icons.add_business, color: Colors.white),
         backgroundColor: Colors.purple,
       ),
@@ -314,8 +637,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Teachers', style: TextStyle(fontWeight: FontWeight.bold)),
-                              TextButton.icon(icon: const Icon(Icons.person_add_alt_1, size: 18), label: const Text('Invite'), onPressed: () => _showInviteTeacherDialog(daycare.id, daycare['name'])),
+                              Text(l10n.tr('teachers'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                              TextButton.icon(icon: const Icon(Icons.person_add_alt_1, size: 18), label: Text(l10n.tr('invite')), onPressed: () => _showInviteTeacherDialog(daycare.id, daycare['name'])),
                             ],
                           ),
                           // Logic to show active and pending teachers
@@ -366,6 +689,7 @@ class TeacherDashboard extends StatelessWidget {
 
   // --- 2. EDIT CHILD DIALOG (New Feature) ---
   void _showEditChildDialog(BuildContext context, String childId, String currentName, List<dynamic>? currentPhones, List<dynamic>? currentEmails) {
+    final l10n = AppLocalizations.of(context);
     final nameController = TextEditingController(text: currentName);
     // Grab the first phone if it exists
     final initialPhone = (currentPhones != null && currentPhones.isNotEmpty) ? currentPhones.first.toString() : "";
@@ -376,19 +700,19 @@ class TeacherDashboard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Edit ${currentName}'),
+        title: Text(l10n.tr('editChild', {'name': currentName})),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Child Name')),
+            TextField(controller: nameController, decoration: InputDecoration(labelText: l10n.tr('childName'))),
             const SizedBox(height: 16),
-            TextField(controller: phoneController, decoration: const InputDecoration(labelText: 'Parent Phone (e.g. 15551234567)')),
+            TextField(controller: phoneController, decoration: InputDecoration(labelText: l10n.tr('parentPhoneExample'))),
             const SizedBox(height: 16),
-            TextField(controller: emailController, decoration: const InputDecoration(labelText: 'Parent Email (e.g. parent@example.com)')),
+            TextField(controller: emailController, decoration: InputDecoration(labelText: l10n.tr('parentEmailExample'))),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.tr('cancel'))),
           ElevatedButton(
             onPressed: () async {
               if (nameController.text.isNotEmpty) {
@@ -400,7 +724,7 @@ class TeacherDashboard extends StatelessWidget {
                 if (context.mounted) Navigator.pop(context);
               }
             },
-            child: const Text('Save Changes'),
+            child: Text(l10n.tr('saveChanges')),
           )
         ],
       ),
@@ -418,20 +742,21 @@ class TeacherDashboard extends StatelessWidget {
   }
 
   void _showIncidentDialog(BuildContext context, String childId, String childName) {
+    final l10n = AppLocalizations.of(context);
     final descController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Incident: $childName'),
-        content: TextField(controller: descController, maxLines: 3, decoration: const InputDecoration(hintText: 'What happened?', border: OutlineInputBorder())),
+        title: Text(l10n.tr('incidentTitle', {'childName': childName})),
+        content: TextField(controller: descController, maxLines: 3, decoration: InputDecoration(hintText: l10n.tr('whatHappened'), border: const OutlineInputBorder())),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.tr('cancel'))),
           ElevatedButton(onPressed: () async {
             if (descController.text.isNotEmpty) {
               await _saveLogToDatabase(childId, 'Incident', descController.text.trim());
               if (context.mounted) Navigator.pop(context);
             }
-          }, child: const Text('Save')),
+          }, child: Text(l10n.tr('save'))),
         ],
       ),
     );
@@ -439,6 +764,7 @@ class TeacherDashboard extends StatelessWidget {
 
   // --- 4. REPORT GENERATOR ---
   void _generateEndDayReport(BuildContext context, String childId, String childName, List<dynamic>? parentPhones) async {
+    final l10n = AppLocalizations.of(context);
     final start = DateTime.now().copyWith(hour: 0, minute: 0, second: 0);
     final end = start.add(const Duration(days: 1));
     final logsQuery = await FirebaseFirestore.instance.collection('activity_logs').where('child_id', isEqualTo: childId).get();
@@ -447,24 +773,24 @@ class TeacherDashboard extends StatelessWidget {
       return ts != null && ts.isAfter(start) && ts.isBefore(end);
     }).toList();
 
-    String summary = "Summary for $childName's day:\n\n";
+    String summary = l10n.tr('summaryForDay', {'childName': childName});
     for (var log in todayLogs) {
       final time = (log['timestamp'] as Timestamp).toDate();
-      summary += "• ${time.hour}:${time.minute.toString().padLeft(2, '0')} - ${log['type']}: ${log['details']}\n";
+      summary += "• ${time.hour}:${time.minute.toString().padLeft(2, '0')} - ${l10n.activityType(log['type'])}: ${l10n.activityDetails(log['details'])}\n";
     }
 
     final reportController = TextEditingController(text: summary);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Daily Report: $childName'),
+        title: Text(l10n.tr('dailyReportTitle', {'childName': childName})),
         content: TextField(controller: reportController, maxLines: 8, decoration: const InputDecoration(border: OutlineInputBorder())),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.tr('cancel'))),
           if (parentPhones != null && parentPhones.isNotEmpty && parentPhones.first.toString().trim().isNotEmpty)
             ElevatedButton.icon(
               icon: const Icon(Icons.message, size: 18),
-              label: const Text('WhatsApp'),
+              label: Text(l10n.tr('whatsApp')),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
               onPressed: () => _launchWhatsApp(parentPhones.first.toString(), reportController.text),
             ),
@@ -473,7 +799,7 @@ class TeacherDashboard extends StatelessWidget {
               await _saveLogToDatabase(childId, 'Daily Summary', reportController.text.trim());
               if (context.mounted) Navigator.pop(context);
             },
-            child: const Text('Save to App'),
+            child: Text(l10n.tr('saveToApp')),
           ),
         ],
       ),
@@ -482,6 +808,7 @@ class TeacherDashboard extends StatelessWidget {
 
   // --- 5. BOTTOM SHEET MENU ---
   void _showLoggingModal(BuildContext context, String childId, String childName, bool isNapping, List<dynamic>? parentPhones) {
+    final l10n = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -494,16 +821,16 @@ class TeacherDashboard extends StatelessWidget {
             children: [
               Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
               const SizedBox(height: 16),
-              Text('Log for $childName', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Text(l10n.tr('logForChild', {'childName': childName}), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
               ListTile(
                 leading: const Icon(Icons.summarize, color: Colors.teal),
-                title: const Text('Generate Daily Report'),
+                title: Text(l10n.tr('generateDailyReport')),
                 onTap: () { Navigator.pop(context); _generateEndDayReport(context, childId, childName, parentPhones); },
               ),
               ListTile(
                 leading: Icon(isNapping ? Icons.wb_sunny : Icons.bedtime, color: isNapping ? Colors.amber : Colors.indigo),
-                title: Text(isNapping ? 'End Nap' : 'Start Nap'),
+                title: Text(isNapping ? l10n.tr('endNap') : l10n.tr('startNap')),
                 onTap: () async {
                   Navigator.pop(context);
                   await FirebaseFirestore.instance.collection('children').doc(childId).update({'is_napping': !isNapping});
@@ -512,12 +839,12 @@ class TeacherDashboard extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.restaurant, color: Colors.orange),
-                title: const Text('Log Meal'),
+                title: Text(l10n.tr('logMeal')),
                 onTap: () async { Navigator.pop(context); await _saveLogToDatabase(childId, 'Meal', 'Ate meal'); },
               ),
               ListTile(
                 leading: const Icon(Icons.warning, color: Colors.red),
-                title: const Text('Incident Report'),
+                title: Text(l10n.tr('incidentReport')),
                 onTap: () { Navigator.pop(context); _showIncidentDialog(context, childId, childName); },
               ),
             ],
@@ -528,20 +855,21 @@ class TeacherDashboard extends StatelessWidget {
   }
 
   void _showAddChildDialog(BuildContext context, String daycareId) {
+    final l10n = AppLocalizations.of(context);
     final nameController = TextEditingController();
     final pEmail = TextEditingController();
     final pPhone = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add Child'),
+        title: Text(l10n.tr('addChild')),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Name *')),
-          TextField(controller: pEmail, decoration: const InputDecoration(labelText: 'Parent Email *')),
-          TextField(controller: pPhone, decoration: const InputDecoration(labelText: 'Parent Phone')),
+          TextField(controller: nameController, decoration: InputDecoration(labelText: l10n.tr('nameRequired'))),
+          TextField(controller: pEmail, decoration: InputDecoration(labelText: l10n.tr('parentEmailRequired'))),
+          TextField(controller: pPhone, decoration: InputDecoration(labelText: l10n.tr('parentPhone'))),
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.tr('cancel'))),
           ElevatedButton(onPressed: () async {
             if (nameController.text.isNotEmpty && pEmail.text.isNotEmpty) {
               await FirebaseFirestore.instance.collection('children').add({
@@ -554,7 +882,7 @@ class TeacherDashboard extends StatelessWidget {
               });
               if (context.mounted) Navigator.pop(context);
             }
-          }, child: const Text('Save'))
+          }, child: Text(l10n.tr('save')))
         ],
       )
     );
@@ -563,6 +891,7 @@ class TeacherDashboard extends StatelessWidget {
   // --- 6. BUILD METHOD ---
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final user = FirebaseAuth.instance.currentUser!;
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
@@ -570,7 +899,12 @@ class TeacherDashboard extends StatelessWidget {
         if (!userSnap.hasData) return const Scaffold(body: Center(child: CircularProgressIndicator()));
         final daycareId = userSnap.data!['daycare_id'];
         return Scaffold(
-          appBar: AppBar(title: const Text('Teacher Dashboard'), backgroundColor: Colors.teal, foregroundColor: Colors.white, actions: [IconButton(icon: const Icon(Icons.logout), onPressed: () => FirebaseAuth.instance.signOut())]),
+          appBar: AppBar(
+            title: Text(l10n.tr('teacherDashboard')),
+            backgroundColor: Colors.teal,
+            foregroundColor: Colors.white,
+            actions: [languageToggleAction(context, color: Colors.white), IconButton(icon: const Icon(Icons.logout), onPressed: () => FirebaseAuth.instance.signOut())],
+          ),
           floatingActionButton: FloatingActionButton(onPressed: () => _showAddChildDialog(context, daycareId), child: const Icon(Icons.add, color: Colors.white), backgroundColor: Colors.teal),
           body: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance.collection('children').where('daycare_id', isEqualTo: daycareId).snapshots(),
@@ -590,8 +924,10 @@ class TeacherDashboard extends StatelessWidget {
                         icon: const Icon(Icons.edit, size: 20, color: Colors.grey),
                         onPressed: () => _showEditChildDialog(context, child.id, childData['name'], parentPhones, childData['parent_emails']),
                       ),
-                      title: Text(childData['name'] ?? 'Unknown', style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text('Parents: ${(childData['parent_emails'] as List<dynamic>?)?.join(', ') ?? 'None'}'),
+                      title: Text(childData['name'] ?? l10n.tr('unknown'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text(
+                        l10n.tr('parents', {'parents': (childData['parent_emails'] as List<dynamic>?)?.join(', ') ?? l10n.tr('none')}),
+                      ),
                       trailing: IconButton(
                         icon: const Icon(Icons.add_circle_outline, color: Colors.teal), 
                         onPressed: () => _showLoggingModal(context, child.id, childData['name'], childData['is_napping'] ?? false, parentPhones)
@@ -613,14 +949,15 @@ class ParentDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final user = FirebaseAuth.instance.currentUser!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Children'),
+        title: Text(l10n.tr('myChildren')),
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
-        actions: [IconButton(icon: const Icon(Icons.logout), onPressed: () => FirebaseAuth.instance.signOut())],
+        actions: [languageToggleAction(context, color: Colors.white), IconButton(icon: const Icon(Icons.logout), onPressed: () => FirebaseAuth.instance.signOut())],
       ),
       // LOGIC: Find any child where the current user's email is in the parent_emails list
       body: StreamBuilder<QuerySnapshot>(
@@ -635,7 +972,7 @@ class ParentDashboard extends StatelessWidget {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(32.0),
-                child: Text('No children linked to ${user.email}. Please ask the teacher to add your email to your child\'s profile.', textAlign: TextAlign.center),
+                child: Text(l10n.tr('noChildrenLinked', {'email': user.email ?? ''}), textAlign: TextAlign.center),
               ),
             );
           }
@@ -654,7 +991,7 @@ class ParentDashboard extends StatelessWidget {
                 child: ListTile(
                   leading: const CircleAvatar(backgroundColor: Colors.indigo, child: Icon(Icons.child_care, color: Colors.white)),
                   title: Text(childName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                  subtitle: const Text('Tap to view today\'s activity'),
+                  subtitle: Text(l10n.tr('tapToViewActivity')),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -686,6 +1023,7 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // These define the window for the calendar selection
     final start = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
     final end = start.add(const Duration(days: 1));
@@ -696,6 +1034,7 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
         actions: [
+          languageToggleAction(context, color: Colors.white),
           IconButton(
             icon: const Icon(Icons.calendar_month),
             onPressed: () async {
@@ -731,7 +1070,7 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
             return bTs.compareTo(aTs);
           });
 
-          if (logs.isEmpty) return const Center(child: Text('No activities for this day.'));
+          if (logs.isEmpty) return Center(child: Text(l10n.tr('noActivitiesForDay')));
 
           return ListView.builder(
             itemCount: logs.length,
@@ -752,8 +1091,8 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                   color: Colors.indigo.withOpacity(0.05),
                   child: ExpansionTile(
                     leading: const Icon(Icons.summarize, color: Colors.indigo),
-                    title: const Text('Daily Summary', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('Posted at $timeStr'),
+                    title: Text(l10n.tr('dailySummary'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(l10n.tr('postedAt', {'time': timeStr})),
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -767,8 +1106,8 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
               // --- UI LOGIC: Standard Activity ---
               return ListTile(
                 leading: const Icon(Icons.check_circle, color: Colors.indigo),
-                title: Text(type, style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text(details),
+                title: Text(l10n.activityType(type), style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text(l10n.activityDetails(details)),
                 trailing: Text(timeStr, style: const TextStyle(color: Colors.grey, fontSize: 12)),
               );
             },
