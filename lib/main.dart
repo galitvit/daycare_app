@@ -51,7 +51,7 @@ class _DaycareAppState extends State<DaycareApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const AuthRouter(),
+      home: AuthRouter(),
     );
   }
 }
@@ -80,6 +80,7 @@ class AppLocalizations {
   String activityType(String type) {
     const knownTypes = {
       'Incident': 'incident',
+      'Daily Note': 'dailyNote',
       'Nap': 'nap',
       'Meal': 'meal',
       'Daily Summary': 'dailySummary',
@@ -134,18 +135,22 @@ class AppLocalizations {
       'parentPhoneExample': 'Parent Phone (e.g. 15551234567)',
       'parentEmailExample': 'Parent Email (e.g. parent@example.com)',
       'saveChanges': 'Save Changes',
-      'incidentTitle': 'Incident: {childName}',
-      'whatHappened': 'What happened?',
+      'incidentTitle': 'Daily Note: {childName}',
+      'whatHappened': 'What would you like to share?',
       'save': 'Save',
       'dailyReportTitle': 'Daily Report: {childName}',
       'whatsApp': 'WhatsApp',
       'saveToApp': 'Save to App',
       'logForChild': 'Log for {childName}',
       'generateDailyReport': 'Generate Daily Report',
-      'endNap': 'End Nap',
-      'startNap': 'Start Nap',
+      'updateNap': 'Update Nap',
+      'napStartTime': 'Nap start time',
+      'napEndTime': 'Nap end time',
+      'saveNap': 'Save Nap',
+      'invalidNapTimes': 'End time must be after start time.',
+      'napDetails': 'Start: {start}, End: {end} (Duration: {duration})',
       'logMeal': 'Log Meal',
-      'incidentReport': 'Incident Report',
+      'incidentReport': 'Daily Note',
       'addChild': 'Add Child',
       'nameRequired': 'Name *',
       'parentEmailRequired': 'Parent Email *',
@@ -157,14 +162,31 @@ class AppLocalizations {
       'myChildren': 'My Children',
       'noChildrenLinked': 'No children linked to {email}. Please ask the teacher to add your email to your child\'s profile.',
       'tapToViewActivity': 'Tap to view today\'s activity',
+      'tapToViewActivityAtDaycare': 'Tap to view today\'s activity at {daycareName}',
       'noActivitiesForDay': 'No activities for this day.',
       'dailySummary': 'Daily Summary',
       'postedAt': 'Posted at {time}',
+      'editActivity': 'Edit Activity',
+      'deleteActivity': 'Delete Activity',
+      'deleteActivityConfirm': 'Are you sure you want to delete this activity?',
+      'updateMeal': 'Update Meal',
+      'updateIncident': 'Update Daily Note',
+      'mealDetailsHint': 'Meal details',
+      'saveUpdate': 'Save Update',
+      'activityUpdated': 'Activity updated.',
+      'activityDeleted': 'Activity deleted.',
+      'updateFailed': 'Update failed.',
+      'deleteDailyReport': 'Delete Daily Report',
+      'deleteDailyReportConfirm': 'Delete this daily report?',
+      'delete': 'Delete',
+      'dailyReportDeleted': 'Daily report deleted.',
+      'deleteFailed': 'Delete failed.',
       'summaryForDay': 'Summary for {childName}\'s day:\n\n',
       'mealAte': 'Ate meal',
       'napSleeping': 'Sleeping',
       'napWokeUp': 'Woke up',
-      'incident': 'Incident',
+      'incident': 'Daily Note',
+      'dailyNote': 'Daily Note',
       'nap': 'Nap',
       'meal': 'Meal',
       'update': 'Update',
@@ -207,18 +229,22 @@ class AppLocalizations {
       'parentPhoneExample': 'טלפון הורה (לדוגמה 15551234567)',
       'parentEmailExample': 'אימייל הורה (לדוגמה parent@example.com)',
       'saveChanges': 'שמור שינויים',
-      'incidentTitle': 'תקרית: {childName}',
-      'whatHappened': 'מה קרה?',
+      'incidentTitle': 'הערה יומית: {childName}',
+      'whatHappened': 'מה תרצה לעדכן?',
       'save': 'שמור',
       'dailyReportTitle': 'דוח יומי: {childName}',
       'whatsApp': 'וואטסאפ',
       'saveToApp': 'שמור באפליקציה',
       'logForChild': 'רישום עבור {childName}',
       'generateDailyReport': 'צור דוח יומי',
-      'endNap': 'סיום שינה',
-      'startNap': 'התחל שינה',
+      'updateNap': 'עדכון שינה',
+      'napStartTime': 'שעת תחילת שינה',
+      'napEndTime': 'שעת סיום שינה',
+      'saveNap': 'שמור שינה',
+      'invalidNapTimes': 'שעת הסיום חייבת להיות אחרי שעת ההתחלה.',
+      'napDetails': 'התחלה: {start}, סיום: {end} (משך: {duration})',
       'logMeal': 'רשום ארוחה',
-      'incidentReport': 'דיווח תקרית',
+      'incidentReport': 'הערה יומית',
       'addChild': 'הוסף ילד',
       'nameRequired': 'שם *',
       'parentEmailRequired': 'אימייל הורה *',
@@ -230,14 +256,31 @@ class AppLocalizations {
       'myChildren': 'הילדים שלי',
       'noChildrenLinked': 'אין ילדים שמקושרים ל־{email}. בקש מהמורה להוסיף את האימייל שלך לפרופיל הילד.',
       'tapToViewActivity': 'הקש לצפייה בפעילות של היום',
+      'tapToViewActivityAtDaycare': 'הקש לצפייה בפעילות של היום ב־{daycareName}',
       'noActivitiesForDay': 'אין פעילויות ליום זה.',
       'dailySummary': 'סיכום יומי',
       'postedAt': 'פורסם ב־{time}',
+      'editActivity': 'ערוך פעילות',
+      'deleteActivity': 'מחק פעילות',
+      'deleteActivityConfirm': 'האם אתה בטוח שברצונך למחוק את הפעילות הזו?',
+      'updateMeal': 'עדכן ארוחה',
+      'updateIncident': 'עדכן הערה יומית',
+      'mealDetailsHint': 'פרטי ארוחה',
+      'saveUpdate': 'שמור עדכון',
+      'activityUpdated': 'הפעילות עודכנה.',
+      'activityDeleted': 'הפעילות נמחקה.',
+      'updateFailed': 'העדכון נכשל.',
+      'deleteDailyReport': 'מחק דוח יומי',
+      'deleteDailyReportConfirm': 'למחוק את הדוח היומי הזה?',
+      'delete': 'מחק',
+      'dailyReportDeleted': 'הדוח היומי נמחק.',
+      'deleteFailed': 'מחיקה נכשלה.',
       'summaryForDay': 'סיכום היום של {childName}:\n\n',
       'mealAte': 'אכל ארוחה',
       'napSleeping': 'ישן',
       'napWokeUp': 'התעורר',
-      'incident': 'תקרית',
+      'incident': 'הערה יומית',
+      'dailyNote': 'הערה יומית',
       'nap': 'שינה',
       'meal': 'ארוחה',
       'update': 'עדכון',
@@ -247,6 +290,75 @@ class AppLocalizations {
       'languageToggle': 'EN',
     },
   };
+}
+
+String _formatTimeHHmm(DateTime dateTime) {
+  final hh = dateTime.hour.toString().padLeft(2, '0');
+  final mm = dateTime.minute.toString().padLeft(2, '0');
+  return '$hh:$mm';
+}
+
+String _formatDurationHHmm(Duration duration) {
+  final totalMinutes = duration.inMinutes;
+  final hours = totalMinutes ~/ 60;
+  final minutes = totalMinutes % 60;
+  return '${hours}:${minutes.toString().padLeft(2, '0')}';
+}
+
+String _formatLogDetails(AppLocalizations l10n, Map<String, dynamic> logData) {
+  final type = logData['type'];
+  if (type == 'Nap') {
+    final napStart = logData['nap_start'];
+    final napEnd = logData['nap_end'];
+    final napDurationMinutes = logData['nap_duration_minutes'];
+
+    if (napStart is Timestamp && napEnd is Timestamp && napDurationMinutes is int) {
+      final startDt = napStart.toDate();
+      final endDt = napEnd.toDate();
+      final duration = Duration(minutes: napDurationMinutes);
+
+      return l10n.tr('napDetails', {
+        'start': _formatTimeHHmm(startDt),
+        'end': _formatTimeHHmm(endDt),
+        'duration': _formatDurationHHmm(duration),
+      });
+    }
+  }
+
+  final details = logData['details']?.toString() ?? '';
+  return l10n.activityDetails(details);
+}
+
+IconData _activityIconForType(String type) {
+  switch (type.trim().toLowerCase()) {
+    case 'meal':
+      return Icons.restaurant;
+    case 'nap':
+      return Icons.bedtime;
+    case 'incident':
+    case 'daily note':
+      return Icons.sticky_note_2;
+    case 'daily summary':
+      return Icons.summarize;
+    default:
+      return Icons.check_circle;
+  }
+}
+
+Color _activityIconColorForType(String type) {
+  switch (type.trim().toLowerCase()) {
+    case 'meal':
+      return Colors.orange;
+    case 'nap':
+      return Colors.indigo;
+    case 'incident':
+    case 'daily note':
+      return Colors.teal;
+    case 'daily summary':
+      return Colors.indigo;
+    default:
+      return Colors.indigo;
+  }
 }
 
 Widget languageToggleAction(BuildContext context, {Color? color}) {
@@ -296,9 +408,9 @@ class AuthRouter extends StatelessWidget {
             final userData = userSnapshot.data!.data() as Map<String, dynamic>;
             final role = userData['role'] ?? 'parent';
 
-            if (role == 'admin') return const AdminDashboard();
-            if (role == 'teacher') return const TeacherDashboard();
-            return const ParentDashboard();
+            if (role == 'admin') return AdminDashboard();
+            if (role == 'teacher') return TeacherDashboard();
+            return ParentDashboard();
           },
         );
       },
@@ -732,13 +844,100 @@ class TeacherDashboard extends StatelessWidget {
   }
 
   // --- 3. LOGGING HELPERS ---
-  Future<void> _saveLogToDatabase(String childId, String type, String details) async {
-    await FirebaseFirestore.instance.collection('activity_logs').add({
+  Future<void> _saveLogToDatabase(
+    String childId,
+    String type,
+    String details, {
+    DateTime? timestamp,
+    Map<String, dynamic>? extra,
+  }) async {
+    final data = <String, dynamic>{
       'child_id': childId,
       'type': type,
       'details': details,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+      'timestamp': timestamp != null ? Timestamp.fromDate(timestamp) : FieldValue.serverTimestamp(),
+    };
+
+    if (extra != null && extra.isNotEmpty) {
+      data.addAll(extra);
+    }
+
+    await FirebaseFirestore.instance.collection('activity_logs').add(data);
+  }
+
+  Future<void> _showUpdateNapDialog(BuildContext parentContext, String childId, String childName) async {
+    final l10n = AppLocalizations.of(parentContext);
+
+    TimeOfDay startTime = TimeOfDay.now();
+    TimeOfDay endTime = TimeOfDay.fromDateTime(DateTime.now().add(const Duration(hours: 1)));
+
+    await showDialog(
+      context: parentContext,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setState) {
+          String timeStr(TimeOfDay t) => '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+
+          return AlertDialog(
+            title: Text('${l10n.tr('updateNap')} - $childName'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l10n.tr('napStartTime')),
+                  trailing: Text(timeStr(startTime)),
+                  onTap: () async {
+                    final picked = await showTimePicker(context: dialogContext, initialTime: startTime);
+                    if (picked != null) setState(() => startTime = picked);
+                  },
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l10n.tr('napEndTime')),
+                  trailing: Text(timeStr(endTime)),
+                  onTap: () async {
+                    final picked = await showTimePicker(context: dialogContext, initialTime: endTime);
+                    if (picked != null) setState(() => endTime = picked);
+                  },
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.tr('cancel'))),
+              ElevatedButton(
+                onPressed: () async {
+                  final now = DateTime.now();
+                  final startDt = DateTime(now.year, now.month, now.day, startTime.hour, startTime.minute);
+                  final endDt = DateTime(now.year, now.month, now.day, endTime.hour, endTime.minute);
+
+                  if (!endDt.isAfter(startDt)) {
+                    ScaffoldMessenger.of(parentContext).showSnackBar(SnackBar(content: Text(l10n.tr('invalidNapTimes'))));
+                    return;
+                  }
+
+                  final duration = endDt.difference(startDt);
+
+                  await _saveLogToDatabase(
+                    childId,
+                    'Nap',
+                    'Nap',
+                    timestamp: startDt,
+                    extra: {
+                      'nap_start': Timestamp.fromDate(startDt),
+                      'nap_end': Timestamp.fromDate(endDt),
+                      'nap_duration_minutes': duration.inMinutes,
+                    },
+                  );
+
+                  if (parentContext.mounted) Navigator.pop(dialogContext);
+                },
+                child: Text(l10n.tr('saveNap')),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   void _showIncidentDialog(BuildContext context, String childId, String childName) {
@@ -753,7 +952,7 @@ class TeacherDashboard extends StatelessWidget {
           TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.tr('cancel'))),
           ElevatedButton(onPressed: () async {
             if (descController.text.isNotEmpty) {
-              await _saveLogToDatabase(childId, 'Incident', descController.text.trim());
+              await _saveLogToDatabase(childId, 'Daily Note', descController.text.trim());
               if (context.mounted) Navigator.pop(context);
             }
           }, child: Text(l10n.tr('save'))),
@@ -769,14 +968,26 @@ class TeacherDashboard extends StatelessWidget {
     final end = start.add(const Duration(days: 1));
     final logsQuery = await FirebaseFirestore.instance.collection('activity_logs').where('child_id', isEqualTo: childId).get();
     final todayLogs = logsQuery.docs.where((doc) {
-      final ts = (doc['timestamp'] as Timestamp?)?.toDate();
-      return ts != null && ts.isAfter(start) && ts.isBefore(end);
+      final logData = doc.data() as Map<String, dynamic>;
+      final ts = (logData['timestamp'] as Timestamp?)?.toDate();
+      final type = (logData['type']?.toString() ?? '').trim().toLowerCase();
+      return ts != null && !ts.isBefore(start) && ts.isBefore(end) && type != 'daily summary';
     }).toList();
+
+    todayLogs.sort((a, b) {
+      final aData = a.data() as Map<String, dynamic>;
+      final bData = b.data() as Map<String, dynamic>;
+      final aTs = (aData['timestamp'] as Timestamp?)?.toDate() ?? DateTime(0);
+      final bTs = (bData['timestamp'] as Timestamp?)?.toDate() ?? DateTime(0);
+      return aTs.compareTo(bTs);
+    });
 
     String summary = l10n.tr('summaryForDay', {'childName': childName});
     for (var log in todayLogs) {
-      final time = (log['timestamp'] as Timestamp).toDate();
-      summary += "• ${time.hour}:${time.minute.toString().padLeft(2, '0')} - ${l10n.activityType(log['type'])}: ${l10n.activityDetails(log['details'])}\n";
+      final logData = log.data() as Map<String, dynamic>;
+      final time = (logData['timestamp'] as Timestamp).toDate();
+      final type = logData['type']?.toString() ?? 'Update';
+      summary += "• ${time.hour}:${time.minute.toString().padLeft(2, '0')} - ${l10n.activityType(type)}: ${_formatLogDetails(l10n, logData)}\n";
     }
 
     final reportController = TextEditingController(text: summary);
@@ -807,15 +1018,15 @@ class TeacherDashboard extends StatelessWidget {
   }
 
   // --- 5. BOTTOM SHEET MENU ---
-  void _showLoggingModal(BuildContext context, String childId, String childName, bool isNapping, List<dynamic>? parentPhones) {
-    final l10n = AppLocalizations.of(context);
+  void _showLoggingModal(BuildContext parentContext, String childId, String childName, bool isNapping, List<dynamic>? parentPhones) {
+    final l10n = AppLocalizations.of(parentContext);
     showModalBottomSheet(
-      context: context,
+      context: parentContext,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) => SafeArea(
+      builder: (sheetContext) => SafeArea(
         child: Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom + 20, top: 20, left: 16, right: 16),
+          padding: EdgeInsets.only(bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 20, top: 20, left: 16, right: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -826,26 +1037,25 @@ class TeacherDashboard extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.summarize, color: Colors.teal),
                 title: Text(l10n.tr('generateDailyReport')),
-                onTap: () { Navigator.pop(context); _generateEndDayReport(context, childId, childName, parentPhones); },
+                onTap: () { Navigator.pop(sheetContext); _generateEndDayReport(parentContext, childId, childName, parentPhones); },
               ),
               ListTile(
-                leading: Icon(isNapping ? Icons.wb_sunny : Icons.bedtime, color: isNapping ? Colors.amber : Colors.indigo),
-                title: Text(isNapping ? l10n.tr('endNap') : l10n.tr('startNap')),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await FirebaseFirestore.instance.collection('children').doc(childId).update({'is_napping': !isNapping});
-                  await _saveLogToDatabase(childId, 'Nap', isNapping ? 'Woke up' : 'Sleeping');
+                leading: const Icon(Icons.bedtime, color: Colors.indigo),
+                title: Text(l10n.tr('updateNap')),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _showUpdateNapDialog(parentContext, childId, childName);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.restaurant, color: Colors.orange),
                 title: Text(l10n.tr('logMeal')),
-                onTap: () async { Navigator.pop(context); await _saveLogToDatabase(childId, 'Meal', 'Ate meal'); },
+                onTap: () async { Navigator.pop(sheetContext); await _saveLogToDatabase(childId, 'Meal', 'Ate meal'); },
               ),
               ListTile(
-                leading: const Icon(Icons.warning, color: Colors.red),
+                leading: const Icon(Icons.sticky_note_2, color: Colors.teal),
                 title: Text(l10n.tr('incidentReport')),
-                onTap: () { Navigator.pop(context); _showIncidentDialog(context, childId, childName); },
+                onTap: () { Navigator.pop(sheetContext); _showIncidentDialog(parentContext, childId, childName); },
               ),
             ],
           ),
@@ -924,6 +1134,17 @@ class TeacherDashboard extends StatelessWidget {
                         icon: const Icon(Icons.edit, size: 20, color: Colors.grey),
                         onPressed: () => _showEditChildDialog(context, child.id, childData['name'], parentPhones, childData['parent_emails']),
                       ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChildTimelineScreen(
+                              childId: child.id,
+                              childName: childData['name'] ?? l10n.tr('unknown'),
+                            ),
+                          ),
+                        );
+                      },
                       title: Text(childData['name'] ?? l10n.tr('unknown'), style: const TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text(
                         l10n.tr('parents', {'parents': (childData['parent_emails'] as List<dynamic>?)?.join(', ') ?? l10n.tr('none')}),
@@ -985,13 +1206,26 @@ class ParentDashboard extends StatelessWidget {
               final childData = children[index].data() as Map<String, dynamic>;
               final childName = childData['name'];
               final childId = children[index].id;
+              final childDaycareId = childData['daycare_id']?.toString();
 
               return Card(
                 margin: const EdgeInsets.all(16),
                 child: ListTile(
                   leading: const CircleAvatar(backgroundColor: Colors.indigo, child: Icon(Icons.child_care, color: Colors.white)),
                   title: Text(childName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                  subtitle: Text(l10n.tr('tapToViewActivity')),
+                  subtitle: childDaycareId == null || childDaycareId.isEmpty
+                      ? Text(l10n.tr('tapToViewActivity'))
+                      : StreamBuilder<DocumentSnapshot>(
+                          stream: FirebaseFirestore.instance.collection('daycares').doc(childDaycareId).snapshots(),
+                          builder: (context, daycareSnapshot) {
+                            final daycareData = daycareSnapshot.data?.data() as Map<String, dynamic>?;
+                            final daycareName = daycareData?['name']?.toString();
+                            if (daycareName == null || daycareName.isEmpty) {
+                              return Text(l10n.tr('tapToViewActivity'));
+                            }
+                            return Text(l10n.tr('tapToViewActivityAtDaycare', {'daycareName': daycareName}));
+                          },
+                        ),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -1021,9 +1255,222 @@ class ChildTimelineScreen extends StatefulWidget {
 class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
   DateTime selectedDate = DateTime.now();
 
+  Future<void> _deleteDailyReport(BuildContext context, QueryDocumentSnapshot logDoc) async {
+    final l10n = AppLocalizations.of(context);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.tr('deleteDailyReport')),
+        content: Text(l10n.tr('deleteDailyReportConfirm')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.tr('cancel')),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text(l10n.tr('delete')),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) {
+      return;
+    }
+
+    try {
+      await logDoc.reference.delete();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('dailyReportDeleted'))));
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('deleteFailed'))));
+      }
+    }
+  }
+
+  Future<void> _deleteActivityLog(BuildContext context, QueryDocumentSnapshot logDoc) async {
+    final l10n = AppLocalizations.of(context);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.tr('deleteActivity')),
+        content: Text(l10n.tr('deleteActivityConfirm')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.tr('cancel')),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text(l10n.tr('delete')),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) {
+      return;
+    }
+
+    try {
+      await logDoc.reference.delete();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('activityDeleted'))));
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('deleteFailed'))));
+      }
+    }
+  }
+
+  Future<void> _showEditActivityDialog(BuildContext context, QueryDocumentSnapshot logDoc) async {
+    final l10n = AppLocalizations.of(context);
+    final data = logDoc.data() as Map<String, dynamic>;
+    final type = data['type']?.toString() ?? '';
+    final normalizedType = type.trim().toLowerCase();
+
+    if (normalizedType == 'nap') {
+      final now = DateTime.now();
+      final ts = (data['timestamp'] as Timestamp?)?.toDate();
+      final fallbackStart = ts ?? now;
+      final napStartTs = data['nap_start'];
+      final napEndTs = data['nap_end'];
+
+      DateTime startDt = napStartTs is Timestamp ? napStartTs.toDate() : fallbackStart;
+      DateTime endDt = napEndTs is Timestamp ? napEndTs.toDate() : startDt.add(const Duration(hours: 1));
+
+      TimeOfDay startTime = TimeOfDay.fromDateTime(startDt);
+      TimeOfDay endTime = TimeOfDay.fromDateTime(endDt);
+
+      await showDialog(
+        context: context,
+        builder: (dialogContext) => StatefulBuilder(
+          builder: (dialogContext, setState) {
+            String timeStr(TimeOfDay t) => '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+
+            return AlertDialog(
+              title: Text('${l10n.tr('updateNap')} - ${widget.childName}'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(l10n.tr('napStartTime')),
+                    trailing: Text(timeStr(startTime)),
+                    onTap: () async {
+                      final picked = await showTimePicker(context: dialogContext, initialTime: startTime);
+                      if (picked != null) setState(() => startTime = picked);
+                    },
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(l10n.tr('napEndTime')),
+                    trailing: Text(timeStr(endTime)),
+                    onTap: () async {
+                      final picked = await showTimePicker(context: dialogContext, initialTime: endTime);
+                      if (picked != null) setState(() => endTime = picked);
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.tr('cancel'))),
+                ElevatedButton(
+                  onPressed: () async {
+                    final base = startDt;
+                    final updatedStart = DateTime(base.year, base.month, base.day, startTime.hour, startTime.minute);
+                    final updatedEnd = DateTime(base.year, base.month, base.day, endTime.hour, endTime.minute);
+
+                    if (!updatedEnd.isAfter(updatedStart)) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('invalidNapTimes'))));
+                      return;
+                    }
+
+                    final duration = updatedEnd.difference(updatedStart);
+                    try {
+                      await logDoc.reference.update({
+                        'type': 'Nap',
+                        'details': 'Nap',
+                        'timestamp': Timestamp.fromDate(updatedStart),
+                        'nap_start': Timestamp.fromDate(updatedStart),
+                        'nap_end': Timestamp.fromDate(updatedEnd),
+                        'nap_duration_minutes': duration.inMinutes,
+                      });
+                      if (context.mounted) {
+                        Navigator.pop(dialogContext);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('activityUpdated'))));
+                      }
+                    } catch (_) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('updateFailed'))));
+                      }
+                    }
+                  },
+                  child: Text(l10n.tr('saveUpdate')),
+                ),
+              ],
+            );
+          },
+        ),
+      );
+      return;
+    }
+
+    if (normalizedType == 'meal' || normalizedType == 'incident' || normalizedType == 'daily note') {
+      final controller = TextEditingController(text: data['details']?.toString() ?? '');
+      final isMeal = normalizedType == 'meal';
+      final titleKey = isMeal ? 'updateMeal' : 'updateIncident';
+      final hintKey = isMeal ? 'mealDetailsHint' : 'whatHappened';
+
+      await showDialog(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(l10n.tr(titleKey)),
+          content: TextField(
+            controller: controller,
+            maxLines: isMeal ? 1 : 3,
+            decoration: InputDecoration(
+              hintText: l10n.tr(hintKey),
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.tr('cancel'))),
+            ElevatedButton(
+              onPressed: () async {
+                final updatedDetails = controller.text.trim();
+                if (updatedDetails.isEmpty) return;
+
+                try {
+                  await logDoc.reference.update({'details': updatedDetails});
+                  if (context.mounted) {
+                    Navigator.pop(dialogContext);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('activityUpdated'))));
+                  }
+                } catch (_) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('updateFailed'))));
+                  }
+                }
+              },
+              child: Text(l10n.tr('saveUpdate')),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final user = FirebaseAuth.instance.currentUser!;
     // These define the window for the calendar selection
     final start = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
     final end = start.add(const Duration(days: 1));
@@ -1049,66 +1496,127 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
           )
         ],
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('activity_logs')
-            .where('child_id', isEqualTo: widget.childId) // Fixed: Added widget.
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-          
-          // Local filtering for the selected calendar date
-          final logs = snapshot.data!.docs.where((doc) {
-            final ts = (doc['timestamp'] as Timestamp?)?.toDate();
-            return ts != null && ts.isAfter(start) && ts.isBefore(end);
-          }).toList();
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
+        builder: (context, userSnapshot) {
+          if (!userSnapshot.hasData) return const Center(child: CircularProgressIndicator());
+          final userData = userSnapshot.data!.data() as Map<String, dynamic>?;
+          final role = (userData?['role']?.toString() ?? 'parent').trim().toLowerCase();
+          final canDeleteDailyReport = role == 'admin' || role == 'teacher';
+          final canEditActivities = role == 'admin' || role == 'teacher';
+          final canDeleteActivities = role == 'admin' || role == 'teacher';
 
-          // Sort logs so newest are at the top
-          logs.sort((a, b) {
-            final aTs = (a['timestamp'] as Timestamp?)?.toDate() ?? DateTime(0);
-            final bTs = (b['timestamp'] as Timestamp?)?.toDate() ?? DateTime(0);
-            return bTs.compareTo(aTs);
-          });
+          return StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('activity_logs')
+                .where('child_id', isEqualTo: widget.childId) // Fixed: Added widget.
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
-          if (logs.isEmpty) return Center(child: Text(l10n.tr('noActivitiesForDay')));
+              // Local filtering for the selected calendar date
+              final logs = snapshot.data!.docs.where((doc) {
+                final ts = (doc['timestamp'] as Timestamp?)?.toDate();
+                return ts != null && ts.isAfter(start) && ts.isBefore(end);
+              }).toList();
 
-          return ListView.builder(
-            itemCount: logs.length,
-            itemBuilder: (context, index) {
-              final logData = logs[index].data() as Map<String, dynamic>;
-              final type = logData['type'] ?? 'Update';
-              final details = logData['details'] ?? '';
-              
-              final timestamp = (logData['timestamp'] as Timestamp?)?.toDate();
-              final timeStr = timestamp != null 
-                  ? "${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}" 
-                  : "";
+              // Sort logs so newest are at the top
+              logs.sort((a, b) {
+                final aTs = (a['timestamp'] as Timestamp?)?.toDate() ?? DateTime(0);
+                final bTs = (b['timestamp'] as Timestamp?)?.toDate() ?? DateTime(0);
+                return bTs.compareTo(aTs);
+              });
 
-              // --- UI LOGIC: Collapsible Summary ---
-              if (type == 'Daily Summary') {
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  color: Colors.indigo.withOpacity(0.05),
-                  child: ExpansionTile(
-                    leading: const Icon(Icons.summarize, color: Colors.indigo),
-                    title: Text(l10n.tr('dailySummary'), style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text(l10n.tr('postedAt', {'time': timeStr})),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(details, style: const TextStyle(fontSize: 16, height: 1.5)),
+              if (logs.isEmpty) return Center(child: Text(l10n.tr('noActivitiesForDay')));
+
+              return ListView.builder(
+                itemCount: logs.length,
+                itemBuilder: (context, index) {
+                  final logDoc = logs[index];
+                  final logData = logDoc.data() as Map<String, dynamic>;
+                  final type = logData['type']?.toString() ?? 'Update';
+                  final normalizedType = type.trim().toLowerCase();
+                  final isDailySummary = normalizedType == 'daily summary';
+                    final canEditThisLog = canEditActivities &&
+                        (normalizedType == 'meal' || normalizedType == 'nap' || normalizedType == 'incident' || normalizedType == 'daily note');
+                    final canDeleteThisLog = canDeleteActivities &&
+                        (normalizedType == 'meal' || normalizedType == 'nap' || normalizedType == 'incident' || normalizedType == 'daily note');
+                  final details = logData['details']?.toString() ?? '';
+                  final detailsText = _formatLogDetails(l10n, logData);
+
+                  final timestamp = (logData['timestamp'] as Timestamp?)?.toDate();
+                  final timeStr = timestamp != null
+                      ? "${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}"
+                      : "";
+
+                  // --- UI LOGIC: Collapsible Summary ---
+                  if (isDailySummary) {
+                    return Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      color: Colors.indigo.withOpacity(0.05),
+                      child: ExpansionTile(
+                        leading: const Icon(Icons.summarize, color: Colors.indigo),
+                        title: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                l10n.tr('dailySummary'),
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            if (canDeleteDailyReport)
+                              IconButton(
+                                onPressed: () => _deleteDailyReport(context, logDoc),
+                                icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                tooltip: l10n.tr('deleteDailyReport'),
+                                visualDensity: VisualDensity.compact,
+                              ),
+                          ],
+                        ),
+                        subtitle: Text(l10n.tr('postedAt', {'time': timeStr})),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(details, style: const TextStyle(fontSize: 16, height: 1.5)),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              }
+                    );
+                  }
 
-              // --- UI LOGIC: Standard Activity ---
-              return ListTile(
-                leading: const Icon(Icons.check_circle, color: Colors.indigo),
-                title: Text(l10n.activityType(type), style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text(l10n.activityDetails(details)),
-                trailing: Text(timeStr, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                  // --- UI LOGIC: Standard Activity ---
+                  return ListTile(
+                    leading: Icon(
+                      _activityIconForType(type),
+                      color: _activityIconColorForType(type),
+                    ),
+                    title: Text(l10n.activityType(type), style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(detailsText),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(timeStr, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                        if (canEditThisLog)
+                          IconButton(
+                            icon: const Icon(Icons.edit, size: 20, color: Colors.indigo),
+                            tooltip: l10n.tr('editActivity'),
+                            onPressed: () => _showEditActivityDialog(context, logDoc),
+                          ),
+                        if (canDeleteThisLog)
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                            tooltip: l10n.tr('deleteActivity'),
+                            onPressed: () => _deleteActivityLog(context, logDoc),
+                          ),
+                      ],
+                    ),
+                  );
+                },
               );
             },
           );
