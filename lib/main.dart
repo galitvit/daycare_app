@@ -341,6 +341,50 @@ String _formatLogDetails(AppLocalizations l10n, Map<String, dynamic> logData) {
   return l10n.activityDetails(details);
 }
 
+String _buildDailyReportText(
+  AppLocalizations l10n,
+  String reportText, {
+  DateTime? whatsAppSentAt,
+}) {
+  final trimmedReport = reportText.trimRight();
+  if (whatsAppSentAt == null) {
+    return trimmedReport;
+  }
+
+  final sentLine = l10n.tr('whatsAppSentAt', {'time': _formatTimeHHmm(whatsAppSentAt)});
+  return '$trimmedReport\n$sentLine';
+}
+
+String _sanitizeDailySummaryText(String details) {
+  return details
+      .split('\n')
+      .where((line) {
+        final trimmedStart = line.trimLeft();
+        return !trimmedStart.startsWith('• WhatsApp message sent at') &&
+            !trimmedStart.startsWith('WhatsApp message sent at') &&
+            !trimmedStart.startsWith('• הודעת וואטסאפ נשלחה ב־') &&
+            !trimmedStart.startsWith('הודעת וואטסאפ נשלחה ב־');
+      })
+      .join('\n');
+}
+
+String? _extractWhatsAppSentLabel(AppLocalizations l10n, Map<String, dynamic> logData) {
+  final whatsAppSentAt = logData['whatsapp_sent_at'];
+  if (whatsAppSentAt is Timestamp) {
+    return l10n.tr('whatsAppSentAt', {'time': _formatTimeHHmm(whatsAppSentAt.toDate())});
+  }
+
+  final details = logData['details']?.toString() ?? '';
+  for (final line in details.split('\n').reversed) {
+    final trimmed = line.trim();
+    if (trimmed.contains('WhatsApp message sent at') || trimmed.contains('הודעת וואטסאפ נשלחה ב־')) {
+      return trimmed.startsWith('• ') ? trimmed.substring(2) : trimmed;
+    }
+  }
+
+  return null;
+}
+
 IconData _activityIconForType(String type) {
   switch (type.trim().toLowerCase()) {
     case 'meal':
@@ -1005,40 +1049,71 @@ class TeacherDashboard extends StatelessWidget {
     }
 
     final reportController = TextEditingController(text: summary);
+    DateTime? whatsAppSentAt;
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.tr('dailyReportTitle', {'childName': childName})),
-        content: TextField(controller: reportController, maxLines: 8, decoration: const InputDecoration(border: OutlineInputBorder())),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.tr('cancel'))),
-          if (parentPhones != null && parentPhones.isNotEmpty && parentPhones.first.toString().trim().isNotEmpty)
-            ElevatedButton.icon(
-              icon: const Icon(Icons.message, size: 18),
-              label: Text(l10n.tr('whatsApp')),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-              onPressed: () async {
-                final sent = await _launchWhatsApp(parentPhones.first.toString(), reportController.text);
-                if (!sent) return;
-
-                final sentLine = '• ${l10n.tr('whatsAppSentAt', {'time': _formatTimeHHmm(DateTime.now())})}';
-                if (!reportController.text.endsWith('\n')) {
-                  reportController.text = '${reportController.text}\n';
-                }
-                reportController.text = '${reportController.text}$sentLine\n';
-                reportController.selection = TextSelection.fromPosition(
-                  TextPosition(offset: reportController.text.length),
-                );
-              },
-            ),
-          ElevatedButton(
-            onPressed: () async {
-              await _saveLogToDatabase(childId, 'Daily Summary', reportController.text.trim());
-              if (context.mounted) Navigator.pop(context);
-            },
-            child: Text(l10n.tr('saveToApp')),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setState) => AlertDialog(
+          title: Text(l10n.tr('dailyReportTitle', {'childName': childName})),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: reportController,
+                maxLines: 8,
+                decoration: const InputDecoration(border: OutlineInputBorder()),
+              ),
+              if (whatsAppSentAt != null) ...[
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    l10n.tr('whatsAppSentAt', {'time': _formatTimeHHmm(whatsAppSentAt!)}),
+                    style: TextStyle(
+                      color: Colors.green[700],
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
-        ],
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.tr('cancel'))),
+            if (parentPhones != null && parentPhones.isNotEmpty && parentPhones.first.toString().trim().isNotEmpty)
+              ElevatedButton.icon(
+                icon: const Icon(Icons.message, size: 18),
+                label: Text(l10n.tr('whatsApp')),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+                onPressed: () async {
+                  final sent = await _launchWhatsApp(parentPhones.first.toString(), reportController.text);
+                  if (!sent) return;
+                  setState(() => whatsAppSentAt = DateTime.now());
+                },
+              ),
+            ElevatedButton(
+              onPressed: () async {
+                final reportToSave = _buildDailyReportText(
+                  l10n,
+                  reportController.text,
+                  whatsAppSentAt: whatsAppSentAt,
+                );
+                await _saveLogToDatabase(
+                  childId,
+                  'Daily Summary',
+                  reportToSave,
+                  extra: whatsAppSentAt == null
+                      ? null
+                      : {
+                          'whatsapp_sent_at': Timestamp.fromDate(whatsAppSentAt!),
+                        },
+                );
+                if (dialogContext.mounted) Navigator.pop(dialogContext);
+              },
+              child: Text(l10n.tr('saveToApp')),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1585,6 +1660,7 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                         (normalizedType == 'meal' || normalizedType == 'nap' || normalizedType == 'incident' || normalizedType == 'daily note');
                     final seenAt = (logData['seen_by_parent_at'] as Timestamp?)?.toDate();
                     final seenAtText = seenAt == null ? l10n.tr('notSeenYet') : l10n.tr('seenAt', {'time': _formatTimeHHmm(seenAt)});
+                    final whatsAppSentLabel = _extractWhatsAppSentLabel(l10n, logData);
                   final details = logData['details']?.toString() ?? '';
                   final detailsText = _formatLogDetails(l10n, logData);
 
@@ -1627,14 +1703,27 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                               ),
                           ],
                         ),
-                        subtitle: Text(l10n.tr('postedAt', {'time': timeStr})),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(l10n.tr('postedAt', {'time': timeStr})),
+                            if (whatsAppSentLabel != null)
+                              Text(
+                                whatsAppSentLabel,
+                                style: TextStyle(
+                                  color: Colors.green[700],
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                          ],
+                        ),
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(details, style: const TextStyle(fontSize: 16, height: 1.5)),
+                                Text(_sanitizeDailySummaryText(details), style: const TextStyle(fontSize: 16, height: 1.5)),
                                 const SizedBox(height: 8),
                                 Text(
                                   seenAtText,
