@@ -166,6 +166,12 @@ class AppLocalizations {
       'noActivitiesForDay': 'No activities for this day.',
       'dailySummary': 'Daily Summary',
       'postedAt': 'Posted at {time}',
+      'whatsAppSentAt': 'WhatsApp message sent at {time}',
+      'markAsSeen': 'Mark as Seen',
+      'seen': 'Seen',
+      'seenAt': 'Seen at {time}',
+      'notSeenYet': 'Not seen yet',
+      'seenMarked': 'Marked as seen.',
       'editActivity': 'Edit Activity',
       'deleteActivity': 'Delete Activity',
       'deleteActivityConfirm': 'Are you sure you want to delete this activity?',
@@ -260,6 +266,12 @@ class AppLocalizations {
       'noActivitiesForDay': 'אין פעילויות ליום זה.',
       'dailySummary': 'סיכום יומי',
       'postedAt': 'פורסם ב־{time}',
+      'whatsAppSentAt': 'הודעת וואטסאפ נשלחה ב־{time}',
+      'markAsSeen': 'סמן כנצפה',
+      'seen': 'נצפה',
+      'seenAt': 'נצפה ב־{time}',
+      'notSeenYet': 'טרם נצפה',
+      'seenMarked': 'סומן כנצפה.',
       'editActivity': 'ערוך פעילות',
       'deleteActivity': 'מחק פעילות',
       'deleteActivityConfirm': 'האם אתה בטוח שברצונך למחוק את הפעילות הזו?',
@@ -790,13 +802,15 @@ class TeacherDashboard extends StatelessWidget {
   const TeacherDashboard({super.key});
 
   // --- 1. WHATSAPP LOGIC ---
-  Future<void> _launchWhatsApp(String phone, String message) async {
+  Future<bool> _launchWhatsApp(String phone, String message) async {
     final cleanPhone = phone.replaceAll(RegExp(r'[^0-9]'), '');
-    if (cleanPhone.isEmpty) return;
+    if (cleanPhone.isEmpty) return false;
     final url = "https://wa.me/$cleanPhone?text=${Uri.encodeComponent(message)}";
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      return true;
     }
+    return false;
   }
 
   // --- 2. EDIT CHILD DIALOG (New Feature) ---
@@ -1003,7 +1017,19 @@ class TeacherDashboard extends StatelessWidget {
               icon: const Icon(Icons.message, size: 18),
               label: Text(l10n.tr('whatsApp')),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-              onPressed: () => _launchWhatsApp(parentPhones.first.toString(), reportController.text),
+              onPressed: () async {
+                final sent = await _launchWhatsApp(parentPhones.first.toString(), reportController.text);
+                if (!sent) return;
+
+                final sentLine = '• ${l10n.tr('whatsAppSentAt', {'time': _formatTimeHHmm(DateTime.now())})}';
+                if (!reportController.text.endsWith('\n')) {
+                  reportController.text = '${reportController.text}\n';
+                }
+                reportController.text = '${reportController.text}$sentLine\n';
+                reportController.selection = TextSelection.fromPosition(
+                  TextPosition(offset: reportController.text.length),
+                );
+              },
             ),
           ElevatedButton(
             onPressed: () async {
@@ -1255,6 +1281,20 @@ class ChildTimelineScreen extends StatefulWidget {
 class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
   DateTime selectedDate = DateTime.now();
 
+  Future<void> _markLogAsSeen(BuildContext context, QueryDocumentSnapshot logDoc) async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      await logDoc.reference.update({'seen_by_parent_at': FieldValue.serverTimestamp()});
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('seenMarked'))));
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('updateFailed'))));
+      }
+    }
+  }
+
   Future<void> _deleteDailyReport(BuildContext context, QueryDocumentSnapshot logDoc) async {
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
@@ -1502,9 +1542,11 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
           if (!userSnapshot.hasData) return const Center(child: CircularProgressIndicator());
           final userData = userSnapshot.data!.data() as Map<String, dynamic>?;
           final role = (userData?['role']?.toString() ?? 'parent').trim().toLowerCase();
-          final canDeleteDailyReport = role == 'admin' || role == 'teacher';
-          final canEditActivities = role == 'admin' || role == 'teacher';
-          final canDeleteActivities = role == 'admin' || role == 'teacher';
+          final isParent = role == 'parent';
+          final isStaff = role == 'admin' || role == 'teacher';
+          final canDeleteDailyReport = isStaff;
+          final canEditActivities = isStaff;
+          final canDeleteActivities = isStaff;
 
           return StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
@@ -1541,6 +1583,8 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                         (normalizedType == 'meal' || normalizedType == 'nap' || normalizedType == 'incident' || normalizedType == 'daily note');
                     final canDeleteThisLog = canDeleteActivities &&
                         (normalizedType == 'meal' || normalizedType == 'nap' || normalizedType == 'incident' || normalizedType == 'daily note');
+                    final seenAt = (logData['seen_by_parent_at'] as Timestamp?)?.toDate();
+                    final seenAtText = seenAt == null ? l10n.tr('notSeenYet') : l10n.tr('seenAt', {'time': _formatTimeHHmm(seenAt)});
                   final details = logData['details']?.toString() ?? '';
                   final detailsText = _formatLogDetails(l10n, logData);
 
@@ -1571,6 +1615,16 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                                 tooltip: l10n.tr('deleteDailyReport'),
                                 visualDensity: VisualDensity.compact,
                               ),
+                            if (isParent)
+                              IconButton(
+                                onPressed: seenAt == null ? () => _markLogAsSeen(context, logDoc) : null,
+                                icon: Icon(
+                                  seenAt == null ? Icons.visibility_outlined : Icons.visibility,
+                                  color: seenAt == null ? Colors.indigo : Colors.green,
+                                ),
+                                tooltip: seenAt == null ? l10n.tr('markAsSeen') : l10n.tr('seen'),
+                                visualDensity: VisualDensity.compact,
+                              ),
                           ],
                         ),
                         subtitle: Text(l10n.tr('postedAt', {'time': timeStr})),
@@ -1581,6 +1635,14 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(details, style: const TextStyle(fontSize: 16, height: 1.5)),
+                                const SizedBox(height: 8),
+                                Text(
+                                  seenAtText,
+                                  style: TextStyle(
+                                    color: seenAt == null ? Colors.grey[700] : Colors.green[700],
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -1596,11 +1658,27 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                       color: _activityIconColorForType(type),
                     ),
                     title: Text(l10n.activityType(type), style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text(detailsText),
+                    subtitle: Text('$detailsText\n$seenAtText'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(timeStr, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                        if (isParent)
+                          IconButton(
+                            icon: Icon(
+                              seenAt == null ? Icons.visibility_outlined : Icons.visibility,
+                              size: 20,
+                              color: seenAt == null ? Colors.indigo : Colors.green,
+                            ),
+                            tooltip: seenAt == null ? l10n.tr('markAsSeen') : l10n.tr('seen'),
+                            onPressed: seenAt == null ? () => _markLogAsSeen(context, logDoc) : null,
+                          ),
+                        if (isStaff)
+                          Icon(
+                            seenAt == null ? Icons.visibility_off_outlined : Icons.visibility,
+                            size: 18,
+                            color: seenAt == null ? Colors.orange : Colors.green,
+                          ),
                         if (canEditThisLog)
                           IconButton(
                             icon: const Icon(Icons.edit, size: 20, color: Colors.indigo),
