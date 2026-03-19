@@ -2032,6 +2032,13 @@ class TeacherDashboard extends StatelessWidget {
                         return !todayDate.isBefore(fromDate) &&
                             !todayDate.isAfter(toDate);
                       });
+                      final openEditChildDialog = () => _showEditChildDialog(
+                        context,
+                        child.id,
+                        childData['name'],
+                        parentPhones,
+                        childData['parent_emails'],
+                      );
 
                       return Card(
                         color: hasActiveParentReportedAbsence
@@ -2068,21 +2075,17 @@ class TeacherDashboard extends StatelessWidget {
                                         : Colors.grey,
                                   ),
                                   tooltip: hasActiveParentReportedAbsence
-                                      ? l10n.tr('parentReportedAbsence')
+                                      ? l10n.tr('editChild', {
+                                          'name':
+                                              childData['name']?.toString() ??
+                                              l10n.tr('unknown'),
+                                        })
                                       : l10n.tr('editChild', {
                                           'name':
                                               childData['name']?.toString() ??
                                               l10n.tr('unknown'),
                                         }),
-                                  onPressed: hasActiveParentReportedAbsence
-                                      ? null
-                                      : () => _showEditChildDialog(
-                                          context,
-                                          child.id,
-                                          childData['name'],
-                                          parentPhones,
-                                          childData['parent_emails'],
-                                        ),
+                                  onPressed: openEditChildDialog,
                                 ),
                               ),
                               onTap: () {
@@ -2111,38 +2114,6 @@ class TeacherDashboard extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  if (hasActiveParentReportedAbsence)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFFDE7C3),
-                                        borderRadius: BorderRadius.circular(
-                                          999,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            Icons.event_busy,
-                                            size: 14,
-                                            color: Color(0xFF9A6700),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            l10n.tr('parentReportedAbsence'),
-                                            style: const TextStyle(
-                                              color: Color(0xFF9A6700),
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
                                 ],
                               ),
                               subtitle: Column(
@@ -2158,15 +2129,44 @@ class TeacherDashboard extends StatelessWidget {
                                     }),
                                   ),
                                   if (hasActiveParentReportedAbsence)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 4),
-                                      child: Text(
-                                        l10n.tr('parentManaged'),
-                                        style: const TextStyle(
-                                          color: Color(0xFF9A6700),
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 6,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFFDE7C3),
+                                            borderRadius: BorderRadius.circular(
+                                              999,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons.event_busy,
+                                                size: 14,
+                                                color: Color(0xFF9A6700),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                l10n.tr(
+                                                  'parentReportedAbsence',
+                                                ),
+                                                style: const TextStyle(
+                                                  color: Color(0xFF9A6700),
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
                                     ),
                                 ],
                               ),
@@ -2198,6 +2198,7 @@ class TeacherDashboard extends StatelessWidget {
                                           ? const Color(0xFF9A6700)
                                           : Colors.teal,
                                     ),
+                                    tooltip: l10n.tr('update'),
                                     onPressed: () => _showLoggingModal(
                                       context,
                                       child.id,
