@@ -34,7 +34,9 @@ class _DaycareAppState extends State<DaycareApp> {
 
   void toggleLanguage() {
     setState(() {
-      _locale = _locale.languageCode == 'en' ? const Locale('he') : const Locale('en');
+      _locale = _locale.languageCode == 'en'
+          ? const Locale('he')
+          : const Locale('en');
     });
   }
 
@@ -43,7 +45,10 @@ class _DaycareAppState extends State<DaycareApp> {
     final l10n = AppLocalizations(_locale);
     return MaterialApp(
       title: l10n.tr('daycareApp'),
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal), useMaterial3: true),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        useMaterial3: true,
+      ),
       locale: _locale,
       supportedLocales: const [Locale('en'), Locale('he')],
       localizationsDelegates: const [
@@ -68,7 +73,10 @@ class AppLocalizations {
   }
 
   String tr(String key, [Map<String, String>? params]) {
-    var value = (_values[locale.languageCode] ?? _values['en']!) [key] ?? _values['en']![key] ?? key;
+    var value =
+        (_values[locale.languageCode] ?? _values['en']!)[key] ??
+        _values['en']![key] ??
+        key;
     if (params != null) {
       for (final entry in params.entries) {
         value = value.replaceAll('{${entry.key}}', entry.value);
@@ -83,6 +91,7 @@ class AppLocalizations {
       'Daily Note': 'dailyNote',
       'Nap': 'nap',
       'Meal': 'meal',
+      'Absence': 'absence',
       'Daily Summary': 'dailySummary',
       'Update': 'update',
     };
@@ -95,6 +104,8 @@ class AppLocalizations {
       'Woke up': 'wokeUp',
       'Sleeping': 'sleeping',
       'Ate meal': 'ateMeal',
+      'Absent': 'Child not in attendance',
+      'Planned absence': 'plannedAbsence',
     };
     final key = knownDetails[details];
     return key == null ? details : tr(key);
@@ -107,7 +118,8 @@ class AppLocalizations {
       'signOut': 'Sign Out',
       'missingEmail': 'This account does not have a valid email address.',
       'googleSignInFailed': 'Google sign-in failed',
-      'googleSignInUnavailable': 'Google sign-in is not available on this device.',
+      'googleSignInUnavailable':
+          'Google sign-in is not available on this device.',
       'allFieldsMandatory': 'All fields are mandatory!',
       'genericError': 'Error',
       'login': 'Login',
@@ -160,9 +172,11 @@ class AppLocalizations {
       'parents': 'Parents: {parents}',
       'none': 'None',
       'myChildren': 'My Children',
-      'noChildrenLinked': 'No children linked to {email}. Please ask the teacher to add your email to your child\'s profile.',
+      'noChildrenLinked':
+          'No children linked to {email}. Please ask the teacher to add your email to your child\'s profile.',
       'tapToViewActivity': 'Tap to view today\'s activity',
-      'tapToViewActivityAtDaycare': 'Tap to view today\'s activity at {daycareName}',
+      'tapToViewActivityAtDaycare':
+          'Tap to view today\'s activity at {daycareName}',
       'noActivitiesForDay': 'No activities for this day.',
       'dailySummary': 'Daily Summary',
       'postedAt': 'Posted at {time}',
@@ -195,10 +209,28 @@ class AppLocalizations {
       'dailyNote': 'Daily Note',
       'nap': 'Nap',
       'meal': 'Meal',
+      'absence': 'Absence',
       'update': 'Update',
       'wokeUp': 'Woke up',
       'sleeping': 'Sleeping',
       'ateMeal': 'Ate meal',
+      'absent': 'Child not in attendance',
+      'plannedAbsence': 'Planned Absence',
+      'reportAbsence': 'Report Absence',
+      'editAbsence': 'Edit Absence',
+      'absenceType': 'Type',
+      'absenceDate': 'Date',
+      'absenceFrom': 'From',
+      'absenceTo': 'To',
+      'absenceNote': 'Note (optional)',
+      'saveAbsence': 'Save Absence',
+      'absenceReports': 'Absence reports',
+      'absenceMarkedToday': 'Marked absent for today.',
+      'absenceAlreadyMarkedToday': 'Absence already marked for today.',
+      'reportedByParent': 'Reported by parent',
+      'reportedByTeacher': 'Reported by teacher',
+      'parentManaged': 'Parent managed',
+      'parentReportedAbsence': 'Parent reported absence',
       'languageToggle': 'עב',
       'noticesBoard': 'Holidays & Vacations',
       'addNotice': 'Add Notice',
@@ -277,9 +309,11 @@ class AppLocalizations {
       'parents': 'הורים: {parents}',
       'none': 'אין',
       'myChildren': 'הילדים שלי',
-      'noChildrenLinked': 'אין ילדים שמקושרים ל־{email}. בקש מהמורה להוסיף את האימייל שלך לפרופיל הילד.',
+      'noChildrenLinked':
+          'אין ילדים שמקושרים ל־{email}. בקש מהמורה להוסיף את האימייל שלך לפרופיל הילד.',
       'tapToViewActivity': 'הקש לצפייה בפעילות של היום',
-      'tapToViewActivityAtDaycare': 'הקש לצפייה בפעילות של היום ב־{daycareName}',
+      'tapToViewActivityAtDaycare':
+          'הקש לצפייה בפעילות של היום ב־{daycareName}',
       'noActivitiesForDay': 'אין פעילויות ליום זה.',
       'dailySummary': 'סיכום יומי',
       'postedAt': 'פורסם ב־{time}',
@@ -312,10 +346,28 @@ class AppLocalizations {
       'dailyNote': 'הערה יומית',
       'nap': 'שינה',
       'meal': 'ארוחה',
+      'absence': 'היעדרות',
       'update': 'עדכון',
       'wokeUp': 'התעורר',
       'sleeping': 'ישן',
       'ateMeal': 'אכל ארוחה',
+      'absent': 'לא נוכח',
+      'plannedAbsence': 'היעדרות מתוכננת',
+      'reportAbsence': 'דיווח היעדרות',
+      'editAbsence': 'עריכת היעדרות',
+      'absenceType': 'סוג',
+      'absenceDate': 'תאריך',
+      'absenceFrom': 'מתאריך',
+      'absenceTo': 'עד תאריך',
+      'absenceNote': 'הערה (אופציונלי)',
+      'saveAbsence': 'שמור היעדרות',
+      'absenceReports': 'דיווחי היעדרות',
+      'absenceMarkedToday': 'הילד סומן כלא נוכח להיום.',
+      'absenceAlreadyMarkedToday': 'כבר קיים דיווח היעדרות להיום.',
+      'reportedByParent': 'דווח על ידי הורה',
+      'reportedByTeacher': 'דווח על ידי הצוות',
+      'parentManaged': 'מנוהל על ידי הורה',
+      'parentReportedAbsence': 'דווחה היעדרות על ידי הורה',
       'languageToggle': 'EN',
       'noticesBoard': 'חגים וחופשות',
       'addNotice': 'הוסף הודעה',
@@ -355,6 +407,19 @@ String _formatDate(DateTime dt) {
   return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';
 }
 
+String _formatAbsenceDateRange(Map<String, dynamic> logData) {
+  final from = (logData['absence_from'] as Timestamp?)?.toDate();
+  final to = (logData['absence_to'] as Timestamp?)?.toDate();
+  if (from == null || to == null) {
+    final timestamp = (logData['timestamp'] as Timestamp?)?.toDate();
+    return timestamp == null ? '' : _formatDate(timestamp);
+  }
+
+  final fromLabel = _formatDate(from);
+  final toLabel = _formatDate(to);
+  return fromLabel == toLabel ? fromLabel : '$fromLabel - $toLabel';
+}
+
 String _formatLogDetails(AppLocalizations l10n, Map<String, dynamic> logData) {
   final type = logData['type'];
   if (type == 'Nap') {
@@ -362,7 +427,9 @@ String _formatLogDetails(AppLocalizations l10n, Map<String, dynamic> logData) {
     final napEnd = logData['nap_end'];
     final napDurationMinutes = logData['nap_duration_minutes'];
 
-    if (napStart is Timestamp && napEnd is Timestamp && napDurationMinutes is int) {
+    if (napStart is Timestamp &&
+        napEnd is Timestamp &&
+        napDurationMinutes is int) {
       final startDt = napStart.toDate();
       final endDt = napEnd.toDate();
       final duration = Duration(minutes: napDurationMinutes);
@@ -375,8 +442,292 @@ String _formatLogDetails(AppLocalizations l10n, Map<String, dynamic> logData) {
     }
   }
 
+  if (type == 'Absence') {
+    final absenceKind = logData['absence_kind']?.toString();
+    final absenceNote = logData['absence_note']?.toString().trim() ?? '';
+    final recordedByRole = logData['recorded_by_role']?.toString();
+    final baseLabel = absenceKind == 'planned'
+        ? l10n.tr('plannedAbsence')
+        : l10n.tr('absent');
+    final dateLabel = _formatAbsenceDateRange(logData);
+    final lines = [
+      baseLabel,
+      if (dateLabel.isNotEmpty) dateLabel,
+      if (recordedByRole == 'teacher') l10n.tr('reportedByTeacher'),
+      if (recordedByRole == 'parent') l10n.tr('reportedByParent'),
+      if (absenceNote.isNotEmpty) absenceNote,
+    ];
+    return lines.join('\n');
+  }
+
   final details = logData['details']?.toString() ?? '';
   return l10n.activityDetails(details);
+}
+
+Future<void> _showAbsenceDialog(
+  BuildContext context, {
+  required String childId,
+  String? recordedByRole,
+  QueryDocumentSnapshot? existing,
+}) async {
+  final l10n = AppLocalizations.of(context);
+  final data = existing?.data() as Map<String, dynamic>?;
+  final details = data?['details']?.toString() ?? '';
+  final existingRecordedByRole = data?['recorded_by_role']?.toString();
+  String absenceKind =
+      data?['absence_kind']?.toString() ??
+      (details.toLowerCase().contains('planned') ? 'planned' : 'unplanned');
+  final noteController = TextEditingController(
+    text: data?['absence_note']?.toString() ?? '',
+  );
+  final existingFrom =
+      (data?['absence_from'] as Timestamp?)?.toDate() ??
+      (data?['timestamp'] as Timestamp?)?.toDate();
+  final existingTo =
+      (data?['absence_to'] as Timestamp?)?.toDate() ?? existingFrom;
+  DateTime fromDate = existingFrom == null
+      ? DateTime.now()
+      : DateTime(existingFrom.year, existingFrom.month, existingFrom.day);
+  DateTime toDate = existingTo == null
+      ? fromDate
+      : DateTime(existingTo.year, existingTo.month, existingTo.day);
+
+  await showDialog(
+    context: context,
+    builder: (dialogContext) => StatefulBuilder(
+      builder: (dialogContext, setState) => AlertDialog(
+        title: Text(
+          existing == null ? l10n.tr('reportAbsence') : l10n.tr('editAbsence'),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<String>(
+                value: absenceKind,
+                decoration: InputDecoration(
+                  labelText: l10n.tr('absenceType'),
+                  border: const OutlineInputBorder(),
+                ),
+                items: [
+                  DropdownMenuItem(
+                    value: 'unplanned',
+                    child: Text(l10n.tr('absence')),
+                  ),
+                  DropdownMenuItem(
+                    value: 'planned',
+                    child: Text(l10n.tr('plannedAbsence')),
+                  ),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => absenceKind = value);
+                  }
+                },
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l10n.tr('absenceFrom')),
+                trailing: Text(
+                  _formatDate(fromDate),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: dialogContext,
+                    initialDate: fromDate,
+                    firstDate: DateTime(2024),
+                    lastDate: DateTime(2030),
+                  );
+                  if (picked != null) {
+                    setState(() {
+                      fromDate = picked;
+                      if (toDate.isBefore(fromDate)) {
+                        toDate = fromDate;
+                      }
+                    });
+                  }
+                },
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l10n.tr('absenceTo')),
+                trailing: Text(
+                  _formatDate(toDate),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: dialogContext,
+                    initialDate: toDate.isBefore(fromDate) ? fromDate : toDate,
+                    firstDate: fromDate,
+                    lastDate: DateTime(2030),
+                  );
+                  if (picked != null) {
+                    setState(() => toDate = picked);
+                  }
+                },
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: noteController,
+                maxLines: 2,
+                decoration: InputDecoration(
+                  labelText: l10n.tr('absenceNote'),
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.tr('cancel')),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final normalizedFrom = DateTime(
+                fromDate.year,
+                fromDate.month,
+                fromDate.day,
+                12,
+              );
+              final finalTo = toDate.isBefore(fromDate) ? fromDate : toDate;
+              final normalizedTo = DateTime(
+                finalTo.year,
+                finalTo.month,
+                finalTo.day,
+                12,
+              );
+              final payload = <String, dynamic>{
+                'child_id': childId,
+                'type': 'Absence',
+                'details': absenceKind == 'planned'
+                    ? 'Planned absence'
+                    : 'Absent',
+                'timestamp': Timestamp.fromDate(normalizedFrom),
+                'absence_from': Timestamp.fromDate(normalizedFrom),
+                'absence_to': Timestamp.fromDate(normalizedTo),
+                'absence_kind': absenceKind,
+                'absence_note': noteController.text.trim(),
+                'recorded_by_role':
+                    existingRecordedByRole ?? recordedByRole ?? 'parent',
+              };
+
+              if (existing == null) {
+                await FirebaseFirestore.instance
+                    .collection('activity_logs')
+                    .add(payload);
+              } else {
+                await existing.reference.update(payload);
+              }
+
+              if (dialogContext.mounted) {
+                Navigator.pop(dialogContext);
+              }
+            },
+            child: Text(
+              l10n.tr(existing == null ? 'saveAbsence' : 'saveUpdate'),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Future<void> _markTeacherAbsenceForToday(
+  BuildContext context, {
+  required String childId,
+}) async {
+  final l10n = AppLocalizations.of(context);
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day, 12);
+  final todayOnly = DateTime(now.year, now.month, now.day);
+
+  final existingLogs = await FirebaseFirestore.instance
+      .collection('activity_logs')
+      .where('child_id', isEqualTo: childId)
+      .where('type', isEqualTo: 'Absence')
+      .get();
+
+  final alreadyMarked = existingLogs.docs.any((doc) {
+    final data = doc.data();
+    if (data['recorded_by_role']?.toString() != 'teacher') {
+      return false;
+    }
+    final from = (data['absence_from'] as Timestamp?)?.toDate();
+    final to = (data['absence_to'] as Timestamp?)?.toDate();
+    if (from == null || to == null) {
+      return false;
+    }
+    final fromDate = DateTime(from.year, from.month, from.day);
+    final toDate = DateTime(to.year, to.month, to.day);
+    return !todayOnly.isBefore(fromDate) && !todayOnly.isAfter(toDate);
+  });
+
+  if (alreadyMarked) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.tr('absenceAlreadyMarkedToday'))),
+      );
+    }
+    return;
+  }
+
+  await FirebaseFirestore.instance.collection('activity_logs').add({
+    'child_id': childId,
+    'type': 'Absence',
+    'details': 'Absent',
+    'timestamp': Timestamp.fromDate(today),
+    'absence_from': Timestamp.fromDate(today),
+    'absence_to': Timestamp.fromDate(today),
+    'absence_kind': 'unplanned',
+    'absence_note': '',
+    'recorded_by_role': 'teacher',
+  });
+
+  if (context.mounted) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.tr('absenceMarkedToday'))));
+  }
+}
+
+Future<void> _deleteAbsenceReport(
+  BuildContext context, {
+  required QueryDocumentSnapshot absenceDoc,
+}) async {
+  final l10n = AppLocalizations.of(context);
+  final confirm = await showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: Text(l10n.tr('deleteActivity')),
+      content: Text(l10n.tr('deleteActivityConfirm')),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext, false),
+          child: Text(l10n.tr('cancel')),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(dialogContext, true),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          child: Text(l10n.tr('delete')),
+        ),
+      ],
+    ),
+  );
+
+  if (confirm != true) return;
+
+  await absenceDoc.reference.delete();
+  if (context.mounted) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.tr('activityDeleted'))));
+  }
 }
 
 String _buildDailyReportText(
@@ -389,7 +740,9 @@ String _buildDailyReportText(
     return trimmedReport;
   }
 
-  final sentLine = l10n.tr('whatsAppSentAt', {'time': _formatTimeHHmm(whatsAppSentAt)});
+  final sentLine = l10n.tr('whatsAppSentAt', {
+    'time': _formatTimeHHmm(whatsAppSentAt),
+  });
   return '$trimmedReport\n$sentLine';
 }
 
@@ -406,16 +759,22 @@ String _sanitizeDailySummaryText(String details) {
       .join('\n');
 }
 
-String? _extractWhatsAppSentLabel(AppLocalizations l10n, Map<String, dynamic> logData) {
+String? _extractWhatsAppSentLabel(
+  AppLocalizations l10n,
+  Map<String, dynamic> logData,
+) {
   final whatsAppSentAt = logData['whatsapp_sent_at'];
   if (whatsAppSentAt is Timestamp) {
-    return l10n.tr('whatsAppSentAt', {'time': _formatTimeHHmm(whatsAppSentAt.toDate())});
+    return l10n.tr('whatsAppSentAt', {
+      'time': _formatTimeHHmm(whatsAppSentAt.toDate()),
+    });
   }
 
   final details = logData['details']?.toString() ?? '';
   for (final line in details.split('\n').reversed) {
     final trimmed = line.trim();
-    if (trimmed.contains('WhatsApp message sent at') || trimmed.contains('הודעת וואטסאפ נשלחה ב־')) {
+    if (trimmed.contains('WhatsApp message sent at') ||
+        trimmed.contains('הודעת וואטסאפ נשלחה ב־')) {
       return trimmed.startsWith('• ') ? trimmed.substring(2) : trimmed;
     }
   }
@@ -429,6 +788,8 @@ IconData _activityIconForType(String type) {
       return Icons.restaurant;
     case 'nap':
       return Icons.bedtime;
+    case 'absence':
+      return Icons.event_busy;
     case 'incident':
     case 'daily note':
       return Icons.sticky_note_2;
@@ -445,6 +806,8 @@ Color _activityIconColorForType(String type) {
       return Colors.orange;
     case 'nap':
       return Colors.indigo;
+    case 'absence':
+      return Colors.redAccent;
     case 'incident':
     case 'daily note':
       return Colors.teal;
@@ -478,17 +841,28 @@ class AuthRouter extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, authSnapshot) {
-        if (authSnapshot.connectionState == ConnectionState.waiting) return const Scaffold(body: Center(child: CircularProgressIndicator()));
-        if (!authSnapshot.hasData || authSnapshot.data == null) return const AuthScreen();
+        if (authSnapshot.connectionState == ConnectionState.waiting)
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        if (!authSnapshot.hasData || authSnapshot.data == null)
+          return const AuthScreen();
 
         final user = authSnapshot.data!;
         return StreamBuilder<DocumentSnapshot>(
-          stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .snapshots(),
           builder: (context, userSnapshot) {
             if (userSnapshot.connectionState == ConnectionState.waiting) {
-              return Scaffold(body: Center(child: Text(l10n.tr('checkingPermissions'))));
+              return Scaffold(
+                body: Center(child: Text(l10n.tr('checkingPermissions'))),
+              );
             }
-            if (userSnapshot.hasError || !userSnapshot.hasData || !userSnapshot.data!.exists) {
+            if (userSnapshot.hasError ||
+                !userSnapshot.hasData ||
+                !userSnapshot.data!.exists) {
               return Scaffold(
                 body: Center(
                   child: ElevatedButton(
@@ -523,7 +897,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _phoneController = TextEditingController(); // NEW
-  bool _isLogin = true; 
+  bool _isLogin = true;
   bool _isLoading = false;
 
   Future<void> _upsertUserProfile(User user, {String? phone}) async {
@@ -532,7 +906,9 @@ class _AuthScreenState extends State<AuthScreen> {
       throw FirebaseAuthException(code: 'missing-email');
     }
 
-    final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid);
     final userDoc = await userRef.get();
 
     if (userDoc.exists) {
@@ -544,7 +920,10 @@ class _AuthScreenState extends State<AuthScreen> {
       return;
     }
 
-    final inviteDoc = await FirebaseFirestore.instance.collection('teacher_invites').doc(email).get();
+    final inviteDoc = await FirebaseFirestore.instance
+        .collection('teacher_invites')
+        .doc(email)
+        .get();
     String assignedRole = 'parent';
     String? assignedDaycareId;
 
@@ -570,7 +949,9 @@ class _AuthScreenState extends State<AuthScreen> {
       UserCredential userCredential;
 
       if (kIsWeb) {
-        userCredential = await FirebaseAuth.instance.signInWithPopup(GoogleAuthProvider());
+        userCredential = await FirebaseAuth.instance.signInWithPopup(
+          GoogleAuthProvider(),
+        );
       } else {
         final googleUser = await GoogleSignIn().signIn();
         if (googleUser == null) {
@@ -578,8 +959,13 @@ class _AuthScreenState extends State<AuthScreen> {
         }
 
         final googleAuth = await googleUser.authentication;
-        final credential = GoogleAuthProvider.credential(accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-        userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        userCredential = await FirebaseAuth.instance.signInWithCredential(
+          credential,
+        );
       }
 
       final user = userCredential.user;
@@ -589,12 +975,18 @@ class _AuthScreenState extends State<AuthScreen> {
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_authErrorMessage(e, l10n, fallbackKey: 'googleSignInFailed'))),
+          SnackBar(
+            content: Text(
+              _authErrorMessage(e, l10n, fallbackKey: 'googleSignInFailed'),
+            ),
+          ),
         );
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('googleSignInUnavailable'))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.tr('googleSignInUnavailable'))),
+        );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -608,22 +1000,32 @@ class _AuthScreenState extends State<AuthScreen> {
     final phone = _phoneController.text.trim();
 
     if (!_isLogin && (email.isEmpty || password.isEmpty || phone.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('allFieldsMandatory'))));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.tr('allFieldsMandatory'))));
       return;
     }
 
     setState(() => _isLoading = true);
     try {
       if (_isLogin) {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
       } else {
-        final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+        final userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password);
         await _upsertUserProfile(userCredential.user!, phone: phone);
       }
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_authErrorMessage(e, l10n, fallbackKey: 'genericError'))),
+          SnackBar(
+            content: Text(
+              _authErrorMessage(e, l10n, fallbackKey: 'genericError'),
+            ),
+          ),
         );
       }
     } finally {
@@ -631,7 +1033,11 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  String _authErrorMessage(FirebaseAuthException error, AppLocalizations l10n, {required String fallbackKey}) {
+  String _authErrorMessage(
+    FirebaseAuthException error,
+    AppLocalizations l10n, {
+    required String fallbackKey,
+  }) {
     switch (error.code) {
       case 'missing-email':
         return l10n.tr('missingEmail');
@@ -658,19 +1064,28 @@ class _AuthScreenState extends State<AuthScreen> {
             const SizedBox(height: 32),
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: l10n.tr('email'), border: const OutlineInputBorder()),
+              decoration: InputDecoration(
+                labelText: l10n.tr('email'),
+                border: const OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 16),
             if (!_isLogin) ...[
               TextField(
                 controller: _phoneController,
-                decoration: InputDecoration(labelText: l10n.tr('phoneNumber'), border: const OutlineInputBorder()),
+                decoration: InputDecoration(
+                  labelText: l10n.tr('phoneNumber'),
+                  border: const OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16),
             ],
             TextField(
-              controller: _passwordController, 
-              decoration: InputDecoration(labelText: l10n.tr('password'), border: const OutlineInputBorder()), 
+              controller: _passwordController,
+              decoration: InputDecoration(
+                labelText: l10n.tr('password'),
+                border: const OutlineInputBorder(),
+              ),
               obscureText: true,
               onSubmitted: (_) => _submitAuth(),
             ),
@@ -682,7 +1097,9 @@ class _AuthScreenState extends State<AuthScreen> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed: _submitAuth,
-                      child: Text(_isLogin ? l10n.tr('login') : l10n.tr('signUp')),
+                      child: Text(
+                        _isLogin ? l10n.tr('login') : l10n.tr('signUp'),
+                      ),
                     ),
                   ),
             const SizedBox(height: 12),
@@ -717,7 +1134,9 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            _isLogin ? l10n.tr('loginWithGoogle') : l10n.tr('signUpWithGoogle'),
+                            _isLogin
+                                ? l10n.tr('loginWithGoogle')
+                                : l10n.tr('signUpWithGoogle'),
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 16,
@@ -729,9 +1148,13 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                   ),
             TextButton(
-              onPressed: () => setState(() => _isLogin = !_isLogin), 
-              child: Text(_isLogin ? l10n.tr('createAccount') : l10n.tr('alreadyHaveAccount'))
-            )
+              onPressed: () => setState(() => _isLogin = !_isLogin),
+              child: Text(
+                _isLogin
+                    ? l10n.tr('createAccount')
+                    : l10n.tr('alreadyHaveAccount'),
+              ),
+            ),
           ],
         ),
       ),
@@ -771,24 +1194,33 @@ class _AdminDashboardState extends State<AdminDashboard> {
         title: Text(l10n.tr('inviteTeacherTo', {'daycareName': daycareName})),
         content: TextField(
           controller: emailController,
-          decoration: InputDecoration(labelText: l10n.tr('teacherEmail'), border: const OutlineInputBorder()),
+          decoration: InputDecoration(
+            labelText: l10n.tr('teacherEmail'),
+            border: const OutlineInputBorder(),
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.tr('cancel'))),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.tr('cancel')),
+          ),
           ElevatedButton(
             onPressed: () async {
               final email = emailController.text.trim().toLowerCase();
               if (email.isNotEmpty) {
-                await FirebaseFirestore.instance.collection('teacher_invites').doc(email).set({
-                  'daycare_id': daycareId,
-                  'daycare_name': daycareName,
-                  'invited_at': FieldValue.serverTimestamp(),
-                });
+                await FirebaseFirestore.instance
+                    .collection('teacher_invites')
+                    .doc(email)
+                    .set({
+                      'daycare_id': daycareId,
+                      'daycare_name': daycareName,
+                      'invited_at': FieldValue.serverTimestamp(),
+                    });
                 if (context.mounted) Navigator.pop(context);
               }
             },
             child: Text(l10n.tr('sendInvite')),
-          )
+          ),
         ],
       ),
     );
@@ -803,28 +1235,50 @@ class _AdminDashboardState extends State<AdminDashboard> {
         title: Text(l10n.tr('adminDashboard')),
         backgroundColor: Colors.purple,
         foregroundColor: Colors.white,
-        actions: [languageToggleAction(context, color: Colors.white), IconButton(icon: const Icon(Icons.logout), onPressed: () => FirebaseAuth.instance.signOut())],
+        actions: [
+          languageToggleAction(context, color: Colors.white),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => FirebaseAuth.instance.signOut(),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: Text(l10n.tr('newDaycare')),
-            content: TextField(controller: _daycareNameController, decoration: InputDecoration(labelText: l10n.tr('daycareName'))),
+            content: TextField(
+              controller: _daycareNameController,
+              decoration: InputDecoration(labelText: l10n.tr('daycareName')),
+            ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.tr('cancel'))),
-              ElevatedButton(onPressed: _addDaycare, child: Text(l10n.tr('create'))),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(l10n.tr('cancel')),
+              ),
+              ElevatedButton(
+                onPressed: _addDaycare,
+                child: Text(l10n.tr('create')),
+              ),
             ],
           ),
         ),
-        label: Text(l10n.tr('addDaycare'), style: const TextStyle(color: Colors.white)),
+        label: Text(
+          l10n.tr('addDaycare'),
+          style: const TextStyle(color: Colors.white),
+        ),
         icon: const Icon(Icons.add_business, color: Colors.white),
         backgroundColor: Colors.purple,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('daycares').where('admin_uid', isEqualTo: user.uid).snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('daycares')
+            .where('admin_uid', isEqualTo: user.uid)
+            .snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData)
+            return const Center(child: CircularProgressIndicator());
           final daycares = snapshot.data!.docs;
           return ListView.builder(
             itemCount: daycares.length,
@@ -834,7 +1288,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 margin: const EdgeInsets.all(12),
                 child: ExpansionTile(
                   leading: const Icon(Icons.business, color: Colors.purple),
-                  title: Text(daycare['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                  title: Text(
+                    daycare['name'],
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -843,23 +1300,63 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(l10n.tr('teachers'), style: const TextStyle(fontWeight: FontWeight.bold)),
-                              TextButton.icon(icon: const Icon(Icons.person_add_alt_1, size: 18), label: Text(l10n.tr('invite')), onPressed: () => _showInviteTeacherDialog(daycare.id, daycare['name'])),
+                              Text(
+                                l10n.tr('teachers'),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextButton.icon(
+                                icon: const Icon(
+                                  Icons.person_add_alt_1,
+                                  size: 18,
+                                ),
+                                label: Text(l10n.tr('invite')),
+                                onPressed: () => _showInviteTeacherDialog(
+                                  daycare.id,
+                                  daycare['name'],
+                                ),
+                              ),
                             ],
                           ),
                           // Logic to show active and pending teachers
                           StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance.collection('users').where('daycare_id', isEqualTo: daycare.id).where('role', isEqualTo: 'teacher').snapshots(),
+                            stream: FirebaseFirestore.instance
+                                .collection('users')
+                                .where('daycare_id', isEqualTo: daycare.id)
+                                .where('role', isEqualTo: 'teacher')
+                                .snapshots(),
                             builder: (context, teacherSnap) {
                               final teachers = teacherSnap.data?.docs ?? [];
                               return StreamBuilder<QuerySnapshot>(
-                                stream: FirebaseFirestore.instance.collection('teacher_invites').where('daycare_id', isEqualTo: daycare.id).snapshots(),
+                                stream: FirebaseFirestore.instance
+                                    .collection('teacher_invites')
+                                    .where('daycare_id', isEqualTo: daycare.id)
+                                    .snapshots(),
                                 builder: (context, inviteSnap) {
                                   final invites = inviteSnap.data?.docs ?? [];
                                   return Column(
                                     children: [
-                                      ...teachers.map((t) => ListTile(dense: true, leading: const Icon(Icons.verified, color: Colors.green), title: Text(t['email']))),
-                                      ...invites.map((i) => ListTile(dense: true, leading: const Icon(Icons.mail_outline, color: Colors.orange), title: Text(i.id))),
+                                      ...teachers.map(
+                                        (t) => ListTile(
+                                          dense: true,
+                                          leading: const Icon(
+                                            Icons.verified,
+                                            color: Colors.green,
+                                          ),
+                                          title: Text(t['email']),
+                                        ),
+                                      ),
+                                      ...invites.map(
+                                        (i) => ListTile(
+                                          dense: true,
+                                          leading: const Icon(
+                                            Icons.mail_outline,
+                                            color: Colors.orange,
+                                          ),
+                                          title: Text(i.id),
+                                        ),
+                                      ),
                                     ],
                                   );
                                 },
@@ -879,6 +1376,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 }
+
 // ----- TEACHER DASHBOARD
 class TeacherDashboard extends StatelessWidget {
   const TeacherDashboard({super.key});
@@ -887,7 +1385,8 @@ class TeacherDashboard extends StatelessWidget {
   Future<bool> _launchWhatsApp(String phone, String message) async {
     final cleanPhone = phone.replaceAll(RegExp(r'[^0-9]'), '');
     if (cleanPhone.isEmpty) return false;
-    final url = "https://wa.me/$cleanPhone?text=${Uri.encodeComponent(message)}";
+    final url =
+        "https://wa.me/$cleanPhone?text=${Uri.encodeComponent(message)}";
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
       return true;
@@ -896,13 +1395,23 @@ class TeacherDashboard extends StatelessWidget {
   }
 
   // --- 2. EDIT CHILD DIALOG (New Feature) ---
-  void _showEditChildDialog(BuildContext context, String childId, String currentName, List<dynamic>? currentPhones, List<dynamic>? currentEmails) {
+  void _showEditChildDialog(
+    BuildContext context,
+    String childId,
+    String currentName,
+    List<dynamic>? currentPhones,
+    List<dynamic>? currentEmails,
+  ) {
     final l10n = AppLocalizations.of(context);
     final nameController = TextEditingController(text: currentName);
     // Grab the first phone if it exists
-    final initialPhone = (currentPhones != null && currentPhones.isNotEmpty) ? currentPhones.first.toString() : "";
+    final initialPhone = (currentPhones != null && currentPhones.isNotEmpty)
+        ? currentPhones.first.toString()
+        : "";
     final phoneController = TextEditingController(text: initialPhone);
-    final initialEmail = (currentEmails != null && currentEmails.isNotEmpty) ? currentEmails.first.toString() : "";
+    final initialEmail = (currentEmails != null && currentEmails.isNotEmpty)
+        ? currentEmails.first.toString()
+        : "";
     final emailController = TextEditingController(text: initialEmail);
 
     showDialog(
@@ -912,28 +1421,51 @@ class TeacherDashboard extends StatelessWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: nameController, decoration: InputDecoration(labelText: l10n.tr('childName'))),
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(labelText: l10n.tr('childName')),
+            ),
             const SizedBox(height: 16),
-            TextField(controller: phoneController, decoration: InputDecoration(labelText: l10n.tr('parentPhoneExample'))),
+            TextField(
+              controller: phoneController,
+              decoration: InputDecoration(
+                labelText: l10n.tr('parentPhoneExample'),
+              ),
+            ),
             const SizedBox(height: 16),
-            TextField(controller: emailController, decoration: InputDecoration(labelText: l10n.tr('parentEmailExample'))),
+            TextField(
+              controller: emailController,
+              decoration: InputDecoration(
+                labelText: l10n.tr('parentEmailExample'),
+              ),
+            ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.tr('cancel'))),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.tr('cancel')),
+          ),
           ElevatedButton(
             onPressed: () async {
               if (nameController.text.isNotEmpty) {
-                await FirebaseFirestore.instance.collection('children').doc(childId).update({
-                  'name': nameController.text.trim(),
-                  'parent_phones': phoneController.text.isEmpty ? [] : [phoneController.text.trim()],
-                  'parent_emails': emailController.text.isEmpty ? [] : [emailController.text.trim()],
-                });
+                await FirebaseFirestore.instance
+                    .collection('children')
+                    .doc(childId)
+                    .update({
+                      'name': nameController.text.trim(),
+                      'parent_phones': phoneController.text.isEmpty
+                          ? []
+                          : [phoneController.text.trim()],
+                      'parent_emails': emailController.text.isEmpty
+                          ? []
+                          : [emailController.text.trim()],
+                    });
                 if (context.mounted) Navigator.pop(context);
               }
             },
             child: Text(l10n.tr('saveChanges')),
-          )
+          ),
         ],
       ),
     );
@@ -951,7 +1483,9 @@ class TeacherDashboard extends StatelessWidget {
       'child_id': childId,
       'type': type,
       'details': details,
-      'timestamp': timestamp != null ? Timestamp.fromDate(timestamp) : FieldValue.serverTimestamp(),
+      'timestamp': timestamp != null
+          ? Timestamp.fromDate(timestamp)
+          : FieldValue.serverTimestamp(),
     };
 
     if (extra != null && extra.isNotEmpty) {
@@ -961,17 +1495,24 @@ class TeacherDashboard extends StatelessWidget {
     await FirebaseFirestore.instance.collection('activity_logs').add(data);
   }
 
-  Future<void> _showUpdateNapDialog(BuildContext parentContext, String childId, String childName) async {
+  Future<void> _showUpdateNapDialog(
+    BuildContext parentContext,
+    String childId,
+    String childName,
+  ) async {
     final l10n = AppLocalizations.of(parentContext);
 
     TimeOfDay startTime = TimeOfDay.now();
-    TimeOfDay endTime = TimeOfDay.fromDateTime(DateTime.now().add(const Duration(hours: 1)));
+    TimeOfDay endTime = TimeOfDay.fromDateTime(
+      DateTime.now().add(const Duration(hours: 1)),
+    );
 
     await showDialog(
       context: parentContext,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setState) {
-          String timeStr(TimeOfDay t) => '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+          String timeStr(TimeOfDay t) =>
+              '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
           return AlertDialog(
             title: Text('${l10n.tr('updateNap')} - $childName'),
@@ -983,7 +1524,10 @@ class TeacherDashboard extends StatelessWidget {
                   title: Text(l10n.tr('napStartTime')),
                   trailing: Text(timeStr(startTime)),
                   onTap: () async {
-                    final picked = await showTimePicker(context: dialogContext, initialTime: startTime);
+                    final picked = await showTimePicker(
+                      context: dialogContext,
+                      initialTime: startTime,
+                    );
                     if (picked != null) setState(() => startTime = picked);
                   },
                 ),
@@ -992,22 +1536,42 @@ class TeacherDashboard extends StatelessWidget {
                   title: Text(l10n.tr('napEndTime')),
                   trailing: Text(timeStr(endTime)),
                   onTap: () async {
-                    final picked = await showTimePicker(context: dialogContext, initialTime: endTime);
+                    final picked = await showTimePicker(
+                      context: dialogContext,
+                      initialTime: endTime,
+                    );
                     if (picked != null) setState(() => endTime = picked);
                   },
                 ),
               ],
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.tr('cancel'))),
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(l10n.tr('cancel')),
+              ),
               ElevatedButton(
                 onPressed: () async {
                   final now = DateTime.now();
-                  final startDt = DateTime(now.year, now.month, now.day, startTime.hour, startTime.minute);
-                  final endDt = DateTime(now.year, now.month, now.day, endTime.hour, endTime.minute);
+                  final startDt = DateTime(
+                    now.year,
+                    now.month,
+                    now.day,
+                    startTime.hour,
+                    startTime.minute,
+                  );
+                  final endDt = DateTime(
+                    now.year,
+                    now.month,
+                    now.day,
+                    endTime.hour,
+                    endTime.minute,
+                  );
 
                   if (!endDt.isAfter(startDt)) {
-                    ScaffoldMessenger.of(parentContext).showSnackBar(SnackBar(content: Text(l10n.tr('invalidNapTimes'))));
+                    ScaffoldMessenger.of(parentContext).showSnackBar(
+                      SnackBar(content: Text(l10n.tr('invalidNapTimes'))),
+                    );
                     return;
                   }
 
@@ -1036,38 +1600,70 @@ class TeacherDashboard extends StatelessWidget {
     );
   }
 
-  void _showIncidentDialog(BuildContext context, String childId, String childName) {
+  void _showIncidentDialog(
+    BuildContext context,
+    String childId,
+    String childName,
+  ) {
     final l10n = AppLocalizations.of(context);
     final descController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.tr('incidentTitle', {'childName': childName})),
-        content: TextField(controller: descController, maxLines: 3, decoration: InputDecoration(hintText: l10n.tr('whatHappened'), border: const OutlineInputBorder())),
+        content: TextField(
+          controller: descController,
+          maxLines: 3,
+          decoration: InputDecoration(
+            hintText: l10n.tr('whatHappened'),
+            border: const OutlineInputBorder(),
+          ),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.tr('cancel'))),
-          ElevatedButton(onPressed: () async {
-            if (descController.text.isNotEmpty) {
-              await _saveLogToDatabase(childId, 'Daily Note', descController.text.trim());
-              if (context.mounted) Navigator.pop(context);
-            }
-          }, child: Text(l10n.tr('save'))),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.tr('cancel')),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (descController.text.isNotEmpty) {
+                await _saveLogToDatabase(
+                  childId,
+                  'Daily Note',
+                  descController.text.trim(),
+                );
+                if (context.mounted) Navigator.pop(context);
+              }
+            },
+            child: Text(l10n.tr('save')),
+          ),
         ],
       ),
     );
   }
 
   // --- 4. REPORT GENERATOR ---
-  void _generateEndDayReport(BuildContext context, String childId, String childName, List<dynamic>? parentPhones) async {
+  void _generateEndDayReport(
+    BuildContext context,
+    String childId,
+    String childName,
+    List<dynamic>? parentPhones,
+  ) async {
     final l10n = AppLocalizations.of(context);
     final start = DateTime.now().copyWith(hour: 0, minute: 0, second: 0);
     final end = start.add(const Duration(days: 1));
-    final logsQuery = await FirebaseFirestore.instance.collection('activity_logs').where('child_id', isEqualTo: childId).get();
+    final logsQuery = await FirebaseFirestore.instance
+        .collection('activity_logs')
+        .where('child_id', isEqualTo: childId)
+        .get();
     final todayLogs = logsQuery.docs.where((doc) {
       final logData = doc.data() as Map<String, dynamic>;
       final ts = (logData['timestamp'] as Timestamp?)?.toDate();
       final type = (logData['type']?.toString() ?? '').trim().toLowerCase();
-      return ts != null && !ts.isBefore(start) && ts.isBefore(end) && type != 'daily summary';
+      return ts != null &&
+          !ts.isBefore(start) &&
+          ts.isBefore(end) &&
+          type != 'daily summary';
     }).toList();
 
     todayLogs.sort((a, b) {
@@ -1083,7 +1679,8 @@ class TeacherDashboard extends StatelessWidget {
       final logData = log.data() as Map<String, dynamic>;
       final time = (logData['timestamp'] as Timestamp).toDate();
       final type = logData['type']?.toString() ?? 'Update';
-      summary += "• ${time.hour}:${time.minute.toString().padLeft(2, '0')} - ${l10n.activityType(type)}: ${_formatLogDetails(l10n, logData)}\n";
+      summary +=
+          "• ${time.hour}:${time.minute.toString().padLeft(2, '0')} - ${l10n.activityType(type)}: ${_formatLogDetails(l10n, logData)}\n";
     }
 
     final reportController = TextEditingController(text: summary);
@@ -1106,7 +1703,9 @@ class TeacherDashboard extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    l10n.tr('whatsAppSentAt', {'time': _formatTimeHHmm(whatsAppSentAt!)}),
+                    l10n.tr('whatsAppSentAt', {
+                      'time': _formatTimeHHmm(whatsAppSentAt!),
+                    }),
                     style: TextStyle(
                       color: Colors.green[700],
                       fontWeight: FontWeight.w600,
@@ -1117,14 +1716,25 @@ class TeacherDashboard extends StatelessWidget {
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.tr('cancel'))),
-            if (parentPhones != null && parentPhones.isNotEmpty && parentPhones.first.toString().trim().isNotEmpty)
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.tr('cancel')),
+            ),
+            if (parentPhones != null &&
+                parentPhones.isNotEmpty &&
+                parentPhones.first.toString().trim().isNotEmpty)
               ElevatedButton.icon(
                 icon: const Icon(Icons.message, size: 18),
                 label: Text(l10n.tr('whatsApp')),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                ),
                 onPressed: () async {
-                  final sent = await _launchWhatsApp(parentPhones.first.toString(), reportController.text);
+                  final sent = await _launchWhatsApp(
+                    parentPhones.first.toString(),
+                    reportController.text,
+                  );
                   if (!sent) return;
                   setState(() => whatsAppSentAt = DateTime.now());
                 },
@@ -1143,7 +1753,9 @@ class TeacherDashboard extends StatelessWidget {
                   extra: whatsAppSentAt == null
                       ? null
                       : {
-                          'whatsapp_sent_at': Timestamp.fromDate(whatsAppSentAt!),
+                          'whatsapp_sent_at': Timestamp.fromDate(
+                            whatsAppSentAt!,
+                          ),
                         },
                 );
                 if (dialogContext.mounted) Navigator.pop(dialogContext);
@@ -1157,26 +1769,60 @@ class TeacherDashboard extends StatelessWidget {
   }
 
   // --- 5. BOTTOM SHEET MENU ---
-  void _showLoggingModal(BuildContext parentContext, String childId, String childName, bool isNapping, List<dynamic>? parentPhones) {
+  void _showLoggingModal(
+    BuildContext parentContext,
+    String childId,
+    String childName,
+    bool isNapping,
+    List<dynamic>? parentPhones,
+  ) {
     final l10n = AppLocalizations.of(parentContext);
     showModalBottomSheet(
       context: parentContext,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (sheetContext) => SafeArea(
         child: Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 20, top: 20, left: 16, right: 16),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 20,
+            top: 20,
+            left: 16,
+            right: 16,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
               const SizedBox(height: 16),
-              Text(l10n.tr('logForChild', {'childName': childName}), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Text(
+                l10n.tr('logForChild', {'childName': childName}),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 12),
               ListTile(
                 leading: const Icon(Icons.summarize, color: Colors.teal),
                 title: Text(l10n.tr('generateDailyReport')),
-                onTap: () { Navigator.pop(sheetContext); _generateEndDayReport(parentContext, childId, childName, parentPhones); },
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _generateEndDayReport(
+                    parentContext,
+                    childId,
+                    childName,
+                    parentPhones,
+                  );
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.bedtime, color: Colors.indigo),
@@ -1189,12 +1835,18 @@ class TeacherDashboard extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.restaurant, color: Colors.orange),
                 title: Text(l10n.tr('logMeal')),
-                onTap: () async { Navigator.pop(sheetContext); await _saveLogToDatabase(childId, 'Meal', 'Ate meal'); },
+                onTap: () async {
+                  Navigator.pop(sheetContext);
+                  await _saveLogToDatabase(childId, 'Meal', 'Ate meal');
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.sticky_note_2, color: Colors.teal),
                 title: Text(l10n.tr('incidentReport')),
-                onTap: () { Navigator.pop(sheetContext); _showIncidentDialog(parentContext, childId, childName); },
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _showIncidentDialog(parentContext, childId, childName);
+                },
               ),
             ],
           ),
@@ -1212,28 +1864,50 @@ class TeacherDashboard extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.tr('addChild')),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: nameController, decoration: InputDecoration(labelText: l10n.tr('nameRequired'))),
-          TextField(controller: pEmail, decoration: InputDecoration(labelText: l10n.tr('parentEmailRequired'))),
-          TextField(controller: pPhone, decoration: InputDecoration(labelText: l10n.tr('parentPhone'))),
-        ]),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(labelText: l10n.tr('nameRequired')),
+            ),
+            TextField(
+              controller: pEmail,
+              decoration: InputDecoration(
+                labelText: l10n.tr('parentEmailRequired'),
+              ),
+            ),
+            TextField(
+              controller: pPhone,
+              decoration: InputDecoration(labelText: l10n.tr('parentPhone')),
+            ),
+          ],
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.tr('cancel'))),
-          ElevatedButton(onPressed: () async {
-            if (nameController.text.isNotEmpty && pEmail.text.isNotEmpty) {
-              await FirebaseFirestore.instance.collection('children').add({
-                'name': nameController.text.trim(),
-                'daycare_id': daycareId,
-                'parent_emails': [pEmail.text.toLowerCase().trim()],
-                'parent_phones': pPhone.text.isEmpty ? [] : [pPhone.text.trim()],
-                'is_napping': false,
-                'allergies': 'None'
-              });
-              if (context.mounted) Navigator.pop(context);
-            }
-          }, child: Text(l10n.tr('save')))
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.tr('cancel')),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (nameController.text.isNotEmpty && pEmail.text.isNotEmpty) {
+                await FirebaseFirestore.instance.collection('children').add({
+                  'name': nameController.text.trim(),
+                  'daycare_id': daycareId,
+                  'parent_emails': [pEmail.text.toLowerCase().trim()],
+                  'parent_phones': pPhone.text.isEmpty
+                      ? []
+                      : [pPhone.text.trim()],
+                  'is_napping': false,
+                  'allergies': 'None',
+                });
+                if (context.mounted) Navigator.pop(context);
+              }
+            },
+            child: Text(l10n.tr('save')),
+          ),
         ],
-      )
+      ),
     );
   }
 
@@ -1243,9 +1917,15 @@ class TeacherDashboard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final user = FirebaseAuth.instance.currentUser!;
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .snapshots(),
       builder: (context, userSnap) {
-        if (!userSnap.hasData) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        if (!userSnap.hasData)
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         final daycareId = userSnap.data!['daycare_id'];
         return Scaffold(
           appBar: AppBar(
@@ -1257,50 +1937,434 @@ class TeacherDashboard extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.event_note),
                 tooltip: l10n.tr('noticesBoard'),
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => NoticesBoardScreen(daycareId: daycareId, canEdit: true))),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        NoticesBoardScreen(daycareId: daycareId, canEdit: true),
+                  ),
+                ),
               ),
-              IconButton(icon: const Icon(Icons.logout), onPressed: () => FirebaseAuth.instance.signOut()),
+              IconButton(
+                icon: const Icon(Icons.logout),
+                onPressed: () => FirebaseAuth.instance.signOut(),
+              ),
             ],
           ),
-          floatingActionButton: FloatingActionButton(onPressed: () => _showAddChildDialog(context, daycareId), child: const Icon(Icons.add, color: Colors.white), backgroundColor: Colors.teal),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => _showAddChildDialog(context, daycareId),
+            child: const Icon(Icons.add, color: Colors.white),
+            backgroundColor: Colors.teal,
+          ),
           body: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection('children').where('daycare_id', isEqualTo: daycareId).snapshots(),
+            stream: FirebaseFirestore.instance
+                .collection('children')
+                .where('daycare_id', isEqualTo: daycareId)
+                .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+              if (!snapshot.hasData)
+                return const Center(child: CircularProgressIndicator());
               final children = snapshot.data!.docs;
               return ListView.builder(
                 itemCount: children.length,
                 itemBuilder: (context, index) {
                   final child = children[index];
                   final childData = child.data() as Map<String, dynamic>;
-                  final parentPhones = childData.containsKey('parent_phones') ? List<dynamic>.from(childData['parent_phones']) : null;
+                  final parentPhones = childData.containsKey('parent_phones')
+                      ? List<dynamic>.from(childData['parent_phones'])
+                      : null;
 
-                  return Card(
-                    child: ListTile(
-                      leading: IconButton(
-                        icon: const Icon(Icons.edit, size: 20, color: Colors.grey),
-                        onPressed: () => _showEditChildDialog(context, child.id, childData['name'], parentPhones, childData['parent_emails']),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ChildTimelineScreen(
-                              childId: child.id,
-                              childName: childData['name'] ?? l10n.tr('unknown'),
-                            ),
-                          ),
+                  return StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('activity_logs')
+                        .where('child_id', isEqualTo: child.id)
+                        .snapshots(),
+                    builder: (context, absenceSnapshot) {
+                      final absences =
+                          absenceSnapshot.data?.docs.where((doc) {
+                            final data = doc.data() as Map<String, dynamic>;
+                            return (data['type']?.toString() ?? '')
+                                    .trim()
+                                    .toLowerCase() ==
+                                'absence';
+                          }).toList() ??
+                          <QueryDocumentSnapshot>[];
+
+                      absences.sort((a, b) {
+                        final aFrom =
+                            ((a.data() as Map<String, dynamic>)['absence_from']
+                                    as Timestamp?)
+                                ?.toDate() ??
+                            DateTime(0);
+                        final bFrom =
+                            ((b.data() as Map<String, dynamic>)['absence_from']
+                                    as Timestamp?)
+                                ?.toDate() ??
+                            DateTime(0);
+                        return bFrom.compareTo(aFrom);
+                      });
+
+                      final today = DateTime.now();
+                      final todayDate = DateTime(
+                        today.year,
+                        today.month,
+                        today.day,
+                      );
+                      final hasActiveParentReportedAbsence = absences.any((
+                        doc,
+                      ) {
+                        final data = doc.data() as Map<String, dynamic>;
+                        if (data['recorded_by_role']?.toString() != 'parent') {
+                          return false;
+                        }
+                        final from = (data['absence_from'] as Timestamp?)
+                            ?.toDate();
+                        final to = (data['absence_to'] as Timestamp?)?.toDate();
+                        if (from == null || to == null) {
+                          return false;
+                        }
+                        final fromDate = DateTime(
+                          from.year,
+                          from.month,
+                          from.day,
                         );
-                      },
-                      title: Text(childData['name'] ?? l10n.tr('unknown'), style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text(
-                        l10n.tr('parents', {'parents': (childData['parent_emails'] as List<dynamic>?)?.join(', ') ?? l10n.tr('none')}),
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.add_circle_outline, color: Colors.teal), 
-                        onPressed: () => _showLoggingModal(context, child.id, childData['name'], childData['is_napping'] ?? false, parentPhones)
-                      ),
-                    ),
+                        final toDate = DateTime(to.year, to.month, to.day);
+                        return !todayDate.isBefore(fromDate) &&
+                            !todayDate.isAfter(toDate);
+                      });
+
+                      return Card(
+                        color: hasActiveParentReportedAbsence
+                            ? const Color(0xFFFFF7E6)
+                            : null,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: hasActiveParentReportedAbsence
+                                ? const Color(0xFFF59E0B)
+                                : Colors.transparent,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            ListTile(
+                              leading: Container(
+                                width: 38,
+                                height: 38,
+                                decoration: BoxDecoration(
+                                  color: hasActiveParentReportedAbsence
+                                      ? const Color(0xFFF59E0B)
+                                      : Colors.grey.shade200,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: IconButton(
+                                  icon: Icon(
+                                    hasActiveParentReportedAbsence
+                                        ? Icons.assignment_late
+                                        : Icons.edit,
+                                    size: 20,
+                                    color: hasActiveParentReportedAbsence
+                                        ? Colors.white
+                                        : Colors.grey,
+                                  ),
+                                  tooltip: hasActiveParentReportedAbsence
+                                      ? l10n.tr('parentReportedAbsence')
+                                      : l10n.tr('editChild', {
+                                          'name':
+                                              childData['name']?.toString() ??
+                                              l10n.tr('unknown'),
+                                        }),
+                                  onPressed: hasActiveParentReportedAbsence
+                                      ? null
+                                      : () => _showEditChildDialog(
+                                          context,
+                                          child.id,
+                                          childData['name'],
+                                          parentPhones,
+                                          childData['parent_emails'],
+                                        ),
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChildTimelineScreen(
+                                      childId: child.id,
+                                      childName:
+                                          childData['name'] ??
+                                          l10n.tr('unknown'),
+                                    ),
+                                  ),
+                                );
+                              },
+                              title: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      childData['name'] ?? l10n.tr('unknown'),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: hasActiveParentReportedAbsence
+                                            ? const Color(0xFF9A6700)
+                                            : null,
+                                      ),
+                                    ),
+                                  ),
+                                  if (hasActiveParentReportedAbsence)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFFDE7C3),
+                                        borderRadius: BorderRadius.circular(
+                                          999,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.event_busy,
+                                            size: 14,
+                                            color: Color(0xFF9A6700),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            l10n.tr('parentReportedAbsence'),
+                                            style: const TextStyle(
+                                              color: Color(0xFF9A6700),
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    l10n.tr('parents', {
+                                      'parents':
+                                          (childData['parent_emails']
+                                                  as List<dynamic>?)
+                                              ?.join(', ') ??
+                                          l10n.tr('none'),
+                                    }),
+                                  ),
+                                  if (hasActiveParentReportedAbsence)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: Text(
+                                        l10n.tr('parentManaged'),
+                                        style: const TextStyle(
+                                          color: Color(0xFF9A6700),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      hasActiveParentReportedAbsence
+                                          ? Icons.event_available
+                                          : Icons.event_busy,
+                                      color: hasActiveParentReportedAbsence
+                                          ? const Color(0xFF9A6700)
+                                          : Colors.redAccent,
+                                    ),
+                                    tooltip: l10n.tr('reportAbsence'),
+                                    onPressed: () =>
+                                        _markTeacherAbsenceForToday(
+                                          context,
+                                          childId: child.id,
+                                        ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      hasActiveParentReportedAbsence
+                                          ? Icons.playlist_add_circle
+                                          : Icons.add_circle_outline,
+                                      color: hasActiveParentReportedAbsence
+                                          ? const Color(0xFF9A6700)
+                                          : Colors.teal,
+                                    ),
+                                    onPressed: () => _showLoggingModal(
+                                      context,
+                                      child.id,
+                                      childData['name'],
+                                      childData['is_napping'] ?? false,
+                                      parentPhones,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (absences.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  12,
+                                  0,
+                                  12,
+                                  12,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Divider(
+                                      height: 1,
+                                      color: hasActiveParentReportedAbsence
+                                          ? const Color(0xFFF2C57C)
+                                          : null,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    ...absences.map((doc) {
+                                      final data =
+                                          doc.data() as Map<String, dynamic>;
+                                      final canManageAbsence =
+                                          data['recorded_by_role']
+                                              ?.toString() !=
+                                          'parent';
+                                      final isParentManaged =
+                                          data['recorded_by_role']
+                                              ?.toString() ==
+                                          'parent';
+                                      final detailsText = _formatLogDetails(
+                                        l10n,
+                                        data,
+                                      );
+                                      return Container(
+                                        margin: const EdgeInsets.only(
+                                          bottom: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: isParentManaged
+                                              ? const Color(0xFFFFF7ED)
+                                              : null,
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                          border: isParentManaged
+                                              ? Border.all(
+                                                  color: const Color(
+                                                    0xFFF2C57C,
+                                                  ),
+                                                )
+                                              : null,
+                                        ),
+                                        child: ListTile(
+                                          dense: true,
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                              ),
+                                          leading: CircleAvatar(
+                                            radius: 14,
+                                            backgroundColor: isParentManaged
+                                                ? const Color(0xFFFDE7C3)
+                                                : Colors.red.withOpacity(0.12),
+                                            child: Icon(
+                                              isParentManaged
+                                                  ? Icons.lock_person_outlined
+                                                  : _activityIconForType(
+                                                      'absence',
+                                                    ),
+                                              color: isParentManaged
+                                                  ? const Color(0xFF9A6700)
+                                                  : _activityIconColorForType(
+                                                      'absence',
+                                                    ),
+                                              size: 16,
+                                            ),
+                                          ),
+                                          title: Text(
+                                            detailsText,
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: isParentManaged
+                                                  ? const Color(0xFF7C5A10)
+                                                  : null,
+                                            ),
+                                          ),
+                                          trailing: canManageAbsence
+                                              ? Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    IconButton(
+                                                      icon: const Icon(
+                                                        Icons.edit,
+                                                        size: 18,
+                                                        color: Colors.indigo,
+                                                      ),
+                                                      tooltip: l10n.tr(
+                                                        'editAbsence',
+                                                      ),
+                                                      onPressed: () =>
+                                                          _showAbsenceDialog(
+                                                            context,
+                                                            childId: child.id,
+                                                            existing: doc,
+                                                          ),
+                                                    ),
+                                                    IconButton(
+                                                      icon: const Icon(
+                                                        Icons.delete_outline,
+                                                        size: 18,
+                                                        color: Colors.red,
+                                                      ),
+                                                      tooltip: l10n.tr(
+                                                        'deleteActivity',
+                                                      ),
+                                                      onPressed: () =>
+                                                          _deleteAbsenceReport(
+                                                            context,
+                                                            absenceDoc: doc,
+                                                          ),
+                                                    ),
+                                                  ],
+                                                )
+                                              : Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.lock_outline,
+                                                      size: 16,
+                                                      color: Colors.grey[600],
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      l10n.tr('parentManaged'),
+                                                      style: const TextStyle(
+                                                        color: Color(
+                                                          0xFF7C5A10,
+                                                        ),
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                        ),
+                                      );
+                                    }),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      );
+                    },
                   );
                 },
               );
@@ -1325,7 +2389,13 @@ class ParentDashboard extends StatelessWidget {
         title: Text(l10n.tr('myChildren')),
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
-        actions: [languageToggleAction(context, color: Colors.white), IconButton(icon: const Icon(Icons.logout), onPressed: () => FirebaseAuth.instance.signOut())],
+        actions: [
+          languageToggleAction(context, color: Colors.white),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => FirebaseAuth.instance.signOut(),
+          ),
+        ],
       ),
       // LOGIC: Find any child where the current user's email is in the parent_emails list
       body: StreamBuilder<QuerySnapshot>(
@@ -1334,19 +2404,26 @@ class ParentDashboard extends StatelessWidget {
             .where('parent_emails', arrayContains: user.email!.toLowerCase())
             .snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
-          
+          if (snapshot.connectionState == ConnectionState.waiting)
+            return const Center(child: CircularProgressIndicator());
+
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(32.0),
-                child: Text(l10n.tr('noChildrenLinked', {'email': user.email ?? ''}), textAlign: TextAlign.center),
+                child: Text(
+                  l10n.tr('noChildrenLinked', {'email': user.email ?? ''}),
+                  textAlign: TextAlign.center,
+                ),
               ),
             );
           }
 
           final children = snapshot.data!.docs;
-          final firstDaycareId = (children.first.data() as Map<String, dynamic>)['daycare_id']?.toString() ?? '';
+          final firstDaycareId =
+              (children.first.data() as Map<String, dynamic>)['daycare_id']
+                  ?.toString() ??
+              '';
 
           final listView = ListView.builder(
             itemCount: children.length + 1,
@@ -1358,44 +2435,211 @@ class ParentDashboard extends StatelessWidget {
                   color: Colors.teal.withOpacity(0.08),
                   child: ListTile(
                     leading: const Icon(Icons.event_note, color: Colors.teal),
-                    title: Text(l10n.tr('viewNoticesBoard'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                    title: Text(
+                      l10n.tr('viewNoticesBoard'),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => NoticesBoardScreen(daycareId: firstDaycareId, canEdit: false)),
+                      MaterialPageRoute(
+                        builder: (_) => NoticesBoardScreen(
+                          daycareId: firstDaycareId,
+                          canEdit: false,
+                        ),
+                      ),
                     ),
                   ),
                 );
               }
-              final childData = children[index - 1].data() as Map<String, dynamic>;
+              final childData =
+                  children[index - 1].data() as Map<String, dynamic>;
               final childName = childData['name'];
               final childId = children[index - 1].id;
               final childDaycareId = childData['daycare_id']?.toString();
 
               return Card(
                 margin: const EdgeInsets.all(16),
-                child: ListTile(
-                  leading: const CircleAvatar(backgroundColor: Colors.indigo, child: Icon(Icons.child_care, color: Colors.white)),
-                  title: Text(childName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                  subtitle: childDaycareId == null || childDaycareId.isEmpty
-                      ? Text(l10n.tr('tapToViewActivity'))
-                      : StreamBuilder<DocumentSnapshot>(
-                          stream: FirebaseFirestore.instance.collection('daycares').doc(childDaycareId).snapshots(),
-                          builder: (context, daycareSnapshot) {
-                            final daycareData = daycareSnapshot.data?.data() as Map<String, dynamic>?;
-                            final daycareName = daycareData?['name']?.toString();
-                            if (daycareName == null || daycareName.isEmpty) {
-                              return Text(l10n.tr('tapToViewActivity'));
-                            }
-                            return Text(l10n.tr('tapToViewActivityAtDaycare', {'daycareName': daycareName}));
-                          },
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor: Colors.indigo,
+                        child: Icon(Icons.child_care, color: Colors.white),
+                      ),
+                      title: Text(
+                        childName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
                         ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ChildTimelineScreen(childId: childId, childName: childName)),
-                    );
-                  },
+                      ),
+                      subtitle: childDaycareId == null || childDaycareId.isEmpty
+                          ? Text(l10n.tr('tapToViewActivity'))
+                          : StreamBuilder<DocumentSnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection('daycares')
+                                  .doc(childDaycareId)
+                                  .snapshots(),
+                              builder: (context, daycareSnapshot) {
+                                final daycareData =
+                                    daycareSnapshot.data?.data()
+                                        as Map<String, dynamic>?;
+                                final daycareName = daycareData?['name']
+                                    ?.toString();
+                                if (daycareName == null ||
+                                    daycareName.isEmpty) {
+                                  return Text(l10n.tr('tapToViewActivity'));
+                                }
+                                return Text(
+                                  l10n.tr('tapToViewActivityAtDaycare', {
+                                    'daycareName': daycareName,
+                                  }),
+                                );
+                              },
+                            ),
+                      trailing: IconButton(
+                        icon: const Icon(
+                          Icons.event_busy,
+                          color: Colors.redAccent,
+                        ),
+                        tooltip: l10n.tr('reportAbsence'),
+                        onPressed: () => _showAbsenceDialog(
+                          context,
+                          childId: childId,
+                          recordedByRole: 'parent',
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChildTimelineScreen(
+                              childId: childId,
+                              childName: childName,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('activity_logs')
+                          .where('child_id', isEqualTo: childId)
+                          .snapshots(),
+                      builder: (context, absenceSnapshot) {
+                        if (!absenceSnapshot.hasData) {
+                          return const SizedBox.shrink();
+                        }
+
+                        final parentAbsences =
+                            absenceSnapshot.data!.docs.where((doc) {
+                              final data = doc.data() as Map<String, dynamic>;
+                              return (data['type']?.toString() ?? '')
+                                          .trim()
+                                          .toLowerCase() ==
+                                      'absence' &&
+                                  data['recorded_by_role']?.toString() ==
+                                      'parent';
+                            }).toList()..sort((a, b) {
+                              final aFrom =
+                                  ((a.data()
+                                              as Map<
+                                                String,
+                                                dynamic
+                                              >)['absence_from']
+                                          as Timestamp?)
+                                      ?.toDate() ??
+                                  DateTime(0);
+                              final bFrom =
+                                  ((b.data()
+                                              as Map<
+                                                String,
+                                                dynamic
+                                              >)['absence_from']
+                                          as Timestamp?)
+                                      ?.toDate() ??
+                                  DateTime(0);
+                              return bFrom.compareTo(aFrom);
+                            });
+
+                        if (parentAbsences.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Divider(height: 1),
+                              const SizedBox(height: 12),
+                              Text(
+                                l10n.tr('absenceReports'),
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              ...parentAbsences.map((doc) {
+                                final data = doc.data() as Map<String, dynamic>;
+                                final detailsText = _formatLogDetails(
+                                  l10n,
+                                  data,
+                                );
+                                return ListTile(
+                                  dense: true,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
+                                  leading: Icon(
+                                    _activityIconForType('absence'),
+                                    color: _activityIconColorForType('absence'),
+                                    size: 20,
+                                  ),
+                                  title: Text(
+                                    detailsText,
+                                    style: const TextStyle(fontSize: 13),
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          size: 18,
+                                          color: Colors.indigo,
+                                        ),
+                                        tooltip: l10n.tr('editAbsence'),
+                                        onPressed: () => _showAbsenceDialog(
+                                          context,
+                                          childId: childId,
+                                          existing: doc,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.delete_outline,
+                                          size: 18,
+                                          color: Colors.red,
+                                        ),
+                                        tooltip: l10n.tr('deleteActivity'),
+                                        onPressed: () => _deleteAbsenceReport(
+                                          context,
+                                          absenceDoc: doc,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               );
             },
@@ -1417,9 +2661,14 @@ class ParentDashboard extends StatelessWidget {
                       final from = (data['date_from'] as Timestamp?)?.toDate();
                       final to = (data['date_to'] as Timestamp?)?.toDate();
                       if (from == null || to == null) return false;
-                      final fromDate = DateTime(from.year, from.month, from.day);
+                      final fromDate = DateTime(
+                        from.year,
+                        from.month,
+                        from.day,
+                      );
                       final toDate = DateTime(to.year, to.month, to.day);
-                      return !todayDate.isBefore(fromDate) && !todayDate.isAfter(toDate);
+                      return !todayDate.isBefore(fromDate) &&
+                          !todayDate.isAfter(toDate);
                     }).toList()
                   : <QueryDocumentSnapshot>[];
 
@@ -1430,7 +2679,10 @@ class ParentDashboard extends StatelessWidget {
                   Container(
                     width: double.infinity,
                     margin: const EdgeInsets.fromLTRB(12, 12, 12, 4),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.teal,
                       borderRadius: BorderRadius.circular(12),
@@ -1438,7 +2690,11 @@ class ParentDashboard extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.event_available, color: Colors.white, size: 22),
+                        const Icon(
+                          Icons.event_available,
+                          color: Colors.white,
+                          size: 22,
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
@@ -1446,11 +2702,26 @@ class ParentDashboard extends StatelessWidget {
                             children: [
                               Text(
                                 l10n.tr('todayNoticeBanner'),
-                                style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500),
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                               ...todayNotices.map((doc) {
-                                final title = (doc.data() as Map<String, dynamic>)['title']?.toString() ?? '';
-                                return Text(title, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold));
+                                final title =
+                                    (doc.data()
+                                            as Map<String, dynamic>)['title']
+                                        ?.toString() ??
+                                    '';
+                                return Text(
+                                  title,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                );
                               }),
                             ],
                           ),
@@ -1473,7 +2744,11 @@ class ParentDashboard extends StatelessWidget {
 class ChildTimelineScreen extends StatefulWidget {
   final String childId;
   final String childName;
-  const ChildTimelineScreen({super.key, required this.childId, required this.childName});
+  const ChildTimelineScreen({
+    super.key,
+    required this.childId,
+    required this.childName,
+  });
 
   @override
   State<ChildTimelineScreen> createState() => _ChildTimelineScreenState();
@@ -1482,21 +2757,33 @@ class ChildTimelineScreen extends StatefulWidget {
 class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
   DateTime selectedDate = DateTime.now();
 
-  Future<void> _markLogAsSeen(BuildContext context, QueryDocumentSnapshot logDoc) async {
+  Future<void> _markLogAsSeen(
+    BuildContext context,
+    QueryDocumentSnapshot logDoc,
+  ) async {
     final l10n = AppLocalizations.of(context);
     try {
-      await logDoc.reference.update({'seen_by_parent_at': FieldValue.serverTimestamp()});
+      await logDoc.reference.update({
+        'seen_by_parent_at': FieldValue.serverTimestamp(),
+      });
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('seenMarked'))));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.tr('seenMarked'))));
       }
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('updateFailed'))));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.tr('updateFailed'))));
       }
     }
   }
 
-  Future<void> _deleteDailyReport(BuildContext context, QueryDocumentSnapshot logDoc) async {
+  Future<void> _deleteDailyReport(
+    BuildContext context,
+    QueryDocumentSnapshot logDoc,
+  ) async {
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
       context: context,
@@ -1524,16 +2811,23 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
     try {
       await logDoc.reference.delete();
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('dailyReportDeleted'))));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.tr('dailyReportDeleted'))));
       }
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('deleteFailed'))));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.tr('deleteFailed'))));
       }
     }
   }
 
-  Future<void> _deleteActivityLog(BuildContext context, QueryDocumentSnapshot logDoc) async {
+  Future<void> _deleteActivityLog(
+    BuildContext context,
+    QueryDocumentSnapshot logDoc,
+  ) async {
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
       context: context,
@@ -1561,20 +2855,36 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
     try {
       await logDoc.reference.delete();
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('activityDeleted'))));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.tr('activityDeleted'))));
       }
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('deleteFailed'))));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.tr('deleteFailed'))));
       }
     }
   }
 
-  Future<void> _showEditActivityDialog(BuildContext context, QueryDocumentSnapshot logDoc) async {
+  Future<void> _showEditActivityDialog(
+    BuildContext context,
+    QueryDocumentSnapshot logDoc,
+  ) async {
     final l10n = AppLocalizations.of(context);
     final data = logDoc.data() as Map<String, dynamic>;
     final type = data['type']?.toString() ?? '';
     final normalizedType = type.trim().toLowerCase();
+
+    if (normalizedType == 'absence') {
+      await _showAbsenceDialog(
+        context,
+        childId: widget.childId,
+        existing: logDoc,
+      );
+      return;
+    }
 
     if (normalizedType == 'nap') {
       final now = DateTime.now();
@@ -1583,8 +2893,12 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
       final napStartTs = data['nap_start'];
       final napEndTs = data['nap_end'];
 
-      DateTime startDt = napStartTs is Timestamp ? napStartTs.toDate() : fallbackStart;
-      DateTime endDt = napEndTs is Timestamp ? napEndTs.toDate() : startDt.add(const Duration(hours: 1));
+      DateTime startDt = napStartTs is Timestamp
+          ? napStartTs.toDate()
+          : fallbackStart;
+      DateTime endDt = napEndTs is Timestamp
+          ? napEndTs.toDate()
+          : startDt.add(const Duration(hours: 1));
 
       TimeOfDay startTime = TimeOfDay.fromDateTime(startDt);
       TimeOfDay endTime = TimeOfDay.fromDateTime(endDt);
@@ -1593,7 +2907,8 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
         context: context,
         builder: (dialogContext) => StatefulBuilder(
           builder: (dialogContext, setState) {
-            String timeStr(TimeOfDay t) => '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+            String timeStr(TimeOfDay t) =>
+                '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
             return AlertDialog(
               title: Text('${l10n.tr('updateNap')} - ${widget.childName}'),
@@ -1605,7 +2920,10 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                     title: Text(l10n.tr('napStartTime')),
                     trailing: Text(timeStr(startTime)),
                     onTap: () async {
-                      final picked = await showTimePicker(context: dialogContext, initialTime: startTime);
+                      final picked = await showTimePicker(
+                        context: dialogContext,
+                        initialTime: startTime,
+                      );
                       if (picked != null) setState(() => startTime = picked);
                     },
                   ),
@@ -1614,22 +2932,42 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                     title: Text(l10n.tr('napEndTime')),
                     trailing: Text(timeStr(endTime)),
                     onTap: () async {
-                      final picked = await showTimePicker(context: dialogContext, initialTime: endTime);
+                      final picked = await showTimePicker(
+                        context: dialogContext,
+                        initialTime: endTime,
+                      );
                       if (picked != null) setState(() => endTime = picked);
                     },
                   ),
                 ],
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.tr('cancel'))),
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text(l10n.tr('cancel')),
+                ),
                 ElevatedButton(
                   onPressed: () async {
                     final base = startDt;
-                    final updatedStart = DateTime(base.year, base.month, base.day, startTime.hour, startTime.minute);
-                    final updatedEnd = DateTime(base.year, base.month, base.day, endTime.hour, endTime.minute);
+                    final updatedStart = DateTime(
+                      base.year,
+                      base.month,
+                      base.day,
+                      startTime.hour,
+                      startTime.minute,
+                    );
+                    final updatedEnd = DateTime(
+                      base.year,
+                      base.month,
+                      base.day,
+                      endTime.hour,
+                      endTime.minute,
+                    );
 
                     if (!updatedEnd.isAfter(updatedStart)) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('invalidNapTimes'))));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(l10n.tr('invalidNapTimes'))),
+                      );
                       return;
                     }
 
@@ -1645,11 +2983,15 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                       });
                       if (context.mounted) {
                         Navigator.pop(dialogContext);
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('activityUpdated'))));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n.tr('activityUpdated'))),
+                        );
                       }
                     } catch (_) {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('updateFailed'))));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n.tr('updateFailed'))),
+                        );
                       }
                     }
                   },
@@ -1663,8 +3005,12 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
       return;
     }
 
-    if (normalizedType == 'meal' || normalizedType == 'incident' || normalizedType == 'daily note') {
-      final controller = TextEditingController(text: data['details']?.toString() ?? '');
+    if (normalizedType == 'meal' ||
+        normalizedType == 'incident' ||
+        normalizedType == 'daily note') {
+      final controller = TextEditingController(
+        text: data['details']?.toString() ?? '',
+      );
       final isMeal = normalizedType == 'meal';
       final titleKey = isMeal ? 'updateMeal' : 'updateIncident';
       final hintKey = isMeal ? 'mealDetailsHint' : 'whatHappened';
@@ -1682,7 +3028,10 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.tr('cancel'))),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.tr('cancel')),
+            ),
             ElevatedButton(
               onPressed: () async {
                 final updatedDetails = controller.text.trim();
@@ -1692,11 +3041,15 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                   await logDoc.reference.update({'details': updatedDetails});
                   if (context.mounted) {
                     Navigator.pop(dialogContext);
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('activityUpdated'))));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.tr('activityUpdated'))),
+                    );
                   }
                 } catch (_) {
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('updateFailed'))));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.tr('updateFailed'))),
+                    );
                   }
                 }
               },
@@ -1713,7 +3066,11 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
     final l10n = AppLocalizations.of(context);
     final user = FirebaseAuth.instance.currentUser!;
     // These define the window for the calendar selection
-    final start = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+    final start = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+    );
     final end = start.add(const Duration(days: 1));
 
     return Scaffold(
@@ -1727,22 +3084,28 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
             icon: const Icon(Icons.calendar_month),
             onPressed: () async {
               final picked = await showDatePicker(
-                context: context, 
-                initialDate: selectedDate, 
-                firstDate: DateTime(2024), 
-                lastDate: DateTime.now()
+                context: context,
+                initialDate: selectedDate,
+                firstDate: DateTime(2024),
+                lastDate: DateTime.now(),
               );
               if (picked != null) setState(() => selectedDate = picked);
             },
-          )
+          ),
         ],
       ),
       body: StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .snapshots(),
         builder: (context, userSnapshot) {
-          if (!userSnapshot.hasData) return const Center(child: CircularProgressIndicator());
+          if (!userSnapshot.hasData)
+            return const Center(child: CircularProgressIndicator());
           final userData = userSnapshot.data!.data() as Map<String, dynamic>?;
-          final role = (userData?['role']?.toString() ?? 'parent').trim().toLowerCase();
+          final role = (userData?['role']?.toString() ?? 'parent')
+              .trim()
+              .toLowerCase();
           final isParent = role == 'parent';
           final isStaff = role == 'admin' || role == 'teacher';
           final canDeleteDailyReport = isStaff;
@@ -1752,25 +3115,54 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
           return StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('activity_logs')
-                .where('child_id', isEqualTo: widget.childId) // Fixed: Added widget.
+                .where(
+                  'child_id',
+                  isEqualTo: widget.childId,
+                ) // Fixed: Added widget.
                 .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+              if (!snapshot.hasData)
+                return const Center(child: CircularProgressIndicator());
 
               // Local filtering for the selected calendar date
               final logs = snapshot.data!.docs.where((doc) {
-                final ts = (doc['timestamp'] as Timestamp?)?.toDate();
+                final data = doc.data() as Map<String, dynamic>;
+                final type = data['type']?.toString().trim().toLowerCase();
+                if (type == 'absence') {
+                  final absenceFrom = (data['absence_from'] as Timestamp?)
+                      ?.toDate();
+                  final absenceTo = (data['absence_to'] as Timestamp?)
+                      ?.toDate();
+                  if (absenceFrom != null && absenceTo != null) {
+                    final fromDate = DateTime(
+                      absenceFrom.year,
+                      absenceFrom.month,
+                      absenceFrom.day,
+                    );
+                    final toDate = DateTime(
+                      absenceTo.year,
+                      absenceTo.month,
+                      absenceTo.day,
+                    );
+                    return !start.isBefore(fromDate) && !start.isAfter(toDate);
+                  }
+                }
+
+                final ts = (data['timestamp'] as Timestamp?)?.toDate();
                 return ts != null && ts.isAfter(start) && ts.isBefore(end);
               }).toList();
 
               // Sort logs so newest are at the top
               logs.sort((a, b) {
-                final aTs = (a['timestamp'] as Timestamp?)?.toDate() ?? DateTime(0);
-                final bTs = (b['timestamp'] as Timestamp?)?.toDate() ?? DateTime(0);
+                final aTs =
+                    (a['timestamp'] as Timestamp?)?.toDate() ?? DateTime(0);
+                final bTs =
+                    (b['timestamp'] as Timestamp?)?.toDate() ?? DateTime(0);
                 return bTs.compareTo(aTs);
               });
 
-              if (logs.isEmpty) return Center(child: Text(l10n.tr('noActivitiesForDay')));
+              if (logs.isEmpty)
+                return Center(child: Text(l10n.tr('noActivitiesForDay')));
 
               return ListView.builder(
                 itemCount: logs.length,
@@ -1780,51 +3172,95 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                   final type = logData['type']?.toString() ?? 'Update';
                   final normalizedType = type.trim().toLowerCase();
                   final isDailySummary = normalizedType == 'daily summary';
-                    final canEditThisLog = canEditActivities &&
-                        (normalizedType == 'meal' || normalizedType == 'nap' || normalizedType == 'incident' || normalizedType == 'daily note');
-                    final canDeleteThisLog = canDeleteActivities &&
-                        (normalizedType == 'meal' || normalizedType == 'nap' || normalizedType == 'incident' || normalizedType == 'daily note');
-                    final seenAt = (logData['seen_by_parent_at'] as Timestamp?)?.toDate();
-                    final seenAtText = seenAt == null ? l10n.tr('notSeenYet') : l10n.tr('seenAt', {'time': _formatTimeHHmm(seenAt)});
-                    final whatsAppSentLabel = _extractWhatsAppSentLabel(l10n, logData);
+                  final isAbsence = normalizedType == 'absence';
+                  final absenceReportedByParent =
+                      logData['recorded_by_role']?.toString() == 'parent';
+                  final canEditThisLog =
+                      (canEditActivities &&
+                          (normalizedType == 'meal' ||
+                              normalizedType == 'nap' ||
+                              normalizedType == 'incident' ||
+                              normalizedType == 'daily note' ||
+                              (isAbsence && !absenceReportedByParent))) ||
+                      (isParent && isAbsence);
+                  final canDeleteThisLog =
+                      (canDeleteActivities &&
+                          (normalizedType == 'meal' ||
+                              normalizedType == 'nap' ||
+                              normalizedType == 'incident' ||
+                              normalizedType == 'daily note' ||
+                              (isAbsence && !absenceReportedByParent))) ||
+                      (isParent && isAbsence);
+                  final seenAt = (logData['seen_by_parent_at'] as Timestamp?)
+                      ?.toDate();
+                  final seenAtText = seenAt == null
+                      ? l10n.tr('notSeenYet')
+                      : l10n.tr('seenAt', {'time': _formatTimeHHmm(seenAt)});
+                  final whatsAppSentLabel = _extractWhatsAppSentLabel(
+                    l10n,
+                    logData,
+                  );
                   final details = logData['details']?.toString() ?? '';
                   final detailsText = _formatLogDetails(l10n, logData);
 
-                  final timestamp = (logData['timestamp'] as Timestamp?)?.toDate();
-                  final timeStr = timestamp != null
+                  final timestamp = (logData['timestamp'] as Timestamp?)
+                      ?.toDate();
+                  final timeStr = isAbsence
+                      ? ''
+                      : timestamp != null
                       ? "${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}"
                       : "";
 
                   // --- UI LOGIC: Collapsible Summary ---
                   if (isDailySummary) {
                     return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       color: Colors.indigo.withOpacity(0.05),
                       child: ExpansionTile(
-                        leading: const Icon(Icons.summarize, color: Colors.indigo),
+                        leading: const Icon(
+                          Icons.summarize,
+                          color: Colors.indigo,
+                        ),
                         title: Row(
                           children: [
                             Expanded(
                               child: Text(
                                 l10n.tr('dailySummary'),
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                             if (canDeleteDailyReport)
                               IconButton(
-                                onPressed: () => _deleteDailyReport(context, logDoc),
-                                icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                onPressed: () =>
+                                    _deleteDailyReport(context, logDoc),
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.red,
+                                ),
                                 tooltip: l10n.tr('deleteDailyReport'),
                                 visualDensity: VisualDensity.compact,
                               ),
                             if (isParent)
                               IconButton(
-                                onPressed: seenAt == null ? () => _markLogAsSeen(context, logDoc) : null,
+                                onPressed: seenAt == null
+                                    ? () => _markLogAsSeen(context, logDoc)
+                                    : null,
                                 icon: Icon(
-                                  seenAt == null ? Icons.visibility_outlined : Icons.visibility,
-                                  color: seenAt == null ? Colors.indigo : Colors.green,
+                                  seenAt == null
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility,
+                                  color: seenAt == null
+                                      ? Colors.indigo
+                                      : Colors.green,
                                 ),
-                                tooltip: seenAt == null ? l10n.tr('markAsSeen') : l10n.tr('seen'),
+                                tooltip: seenAt == null
+                                    ? l10n.tr('markAsSeen')
+                                    : l10n.tr('seen'),
                                 visualDensity: VisualDensity.compact,
                               ),
                           ],
@@ -1849,12 +3285,20 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(_sanitizeDailySummaryText(details), style: const TextStyle(fontSize: 16, height: 1.5)),
+                                Text(
+                                  _sanitizeDailySummaryText(details),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    height: 1.5,
+                                  ),
+                                ),
                                 const SizedBox(height: 8),
                                 Text(
                                   seenAtText,
                                   style: TextStyle(
-                                    color: seenAt == null ? Colors.grey[700] : Colors.green[700],
+                                    color: seenAt == null
+                                        ? Colors.grey[700]
+                                        : Colors.green[700],
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -1872,39 +3316,70 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                       _activityIconForType(type),
                       color: _activityIconColorForType(type),
                     ),
-                    title: Text(l10n.activityType(type), style: const TextStyle(fontWeight: FontWeight.bold)),
+                    title: Text(
+                      l10n.activityType(type),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     subtitle: Text('$detailsText\n$seenAtText'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(timeStr, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                        Text(
+                          timeStr,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                        ),
                         if (isParent)
                           IconButton(
                             icon: Icon(
-                              seenAt == null ? Icons.visibility_outlined : Icons.visibility,
+                              seenAt == null
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility,
                               size: 20,
-                              color: seenAt == null ? Colors.indigo : Colors.green,
+                              color: seenAt == null
+                                  ? Colors.indigo
+                                  : Colors.green,
                             ),
-                            tooltip: seenAt == null ? l10n.tr('markAsSeen') : l10n.tr('seen'),
-                            onPressed: seenAt == null ? () => _markLogAsSeen(context, logDoc) : null,
+                            tooltip: seenAt == null
+                                ? l10n.tr('markAsSeen')
+                                : l10n.tr('seen'),
+                            onPressed: seenAt == null
+                                ? () => _markLogAsSeen(context, logDoc)
+                                : null,
                           ),
                         if (isStaff)
                           Icon(
-                            seenAt == null ? Icons.visibility_off_outlined : Icons.visibility,
+                            seenAt == null
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility,
                             size: 18,
-                            color: seenAt == null ? Colors.orange : Colors.green,
+                            color: seenAt == null
+                                ? Colors.orange
+                                : Colors.green,
                           ),
                         if (canEditThisLog)
                           IconButton(
-                            icon: const Icon(Icons.edit, size: 20, color: Colors.indigo),
+                            icon: const Icon(
+                              Icons.edit,
+                              size: 20,
+                              color: Colors.indigo,
+                            ),
                             tooltip: l10n.tr('editActivity'),
-                            onPressed: () => _showEditActivityDialog(context, logDoc),
+                            onPressed: () =>
+                                _showEditActivityDialog(context, logDoc),
                           ),
                         if (canDeleteThisLog)
                           IconButton(
-                            icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              size: 20,
+                              color: Colors.red,
+                            ),
                             tooltip: l10n.tr('deleteActivity'),
-                            onPressed: () => _deleteActivityLog(context, logDoc),
+                            onPressed: () =>
+                                _deleteActivityLog(context, logDoc),
                           ),
                       ],
                     ),
@@ -1923,13 +3398,24 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
 class NoticesBoardScreen extends StatelessWidget {
   final String daycareId;
   final bool canEdit;
-  const NoticesBoardScreen({super.key, required this.daycareId, required this.canEdit});
+  const NoticesBoardScreen({
+    super.key,
+    required this.daycareId,
+    required this.canEdit,
+  });
 
-  void _showAddOrEditNoticeDialog(BuildContext context, {QueryDocumentSnapshot? existing}) {
+  void _showAddOrEditNoticeDialog(
+    BuildContext context, {
+    QueryDocumentSnapshot? existing,
+  }) {
     final l10n = AppLocalizations.of(context);
     final data = existing?.data() as Map<String, dynamic>?;
-    final titleController = TextEditingController(text: data?['title']?.toString() ?? '');
-    final noteController = TextEditingController(text: data?['note']?.toString() ?? '');
+    final titleController = TextEditingController(
+      text: data?['title']?.toString() ?? '',
+    );
+    final noteController = TextEditingController(
+      text: data?['note']?.toString() ?? '',
+    );
     final now = DateTime.now();
     DateTime fromDate = data != null && data['date_from'] is Timestamp
         ? (data['date_from'] as Timestamp).toDate()
@@ -1942,7 +3428,9 @@ class NoticesBoardScreen extends StatelessWidget {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setState) => AlertDialog(
-          title: Text(existing == null ? l10n.tr('addNotice') : l10n.tr('editNotice')),
+          title: Text(
+            existing == null ? l10n.tr('addNotice') : l10n.tr('editNotice'),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -1958,7 +3446,10 @@ class NoticesBoardScreen extends StatelessWidget {
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(l10n.tr('noticeFrom')),
-                  trailing: Text(_formatDate(fromDate), style: const TextStyle(fontWeight: FontWeight.bold)),
+                  trailing: Text(
+                    _formatDate(fromDate),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   onTap: () async {
                     final picked = await showDatePicker(
                       context: dialogContext,
@@ -1972,11 +3463,16 @@ class NoticesBoardScreen extends StatelessWidget {
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(l10n.tr('noticeTo')),
-                  trailing: Text(_formatDate(toDate), style: const TextStyle(fontWeight: FontWeight.bold)),
+                  trailing: Text(
+                    _formatDate(toDate),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   onTap: () async {
                     final picked = await showDatePicker(
                       context: dialogContext,
-                      initialDate: toDate.isBefore(fromDate) ? fromDate : toDate,
+                      initialDate: toDate.isBefore(fromDate)
+                          ? fromDate
+                          : toDate,
                       firstDate: fromDate,
                       lastDate: DateTime(2030),
                     );
@@ -1996,25 +3492,36 @@ class NoticesBoardScreen extends StatelessWidget {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.tr('cancel'))),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.tr('cancel')),
+            ),
             ElevatedButton(
               onPressed: () async {
                 final title = titleController.text.trim();
                 if (title.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('noticeTitleRequired'))));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.tr('noticeTitleRequired'))),
+                  );
                   return;
                 }
                 final finalTo = toDate.isBefore(fromDate) ? fromDate : toDate;
                 final payload = <String, dynamic>{
                   'daycare_id': daycareId,
                   'title': title,
-                  'date_from': Timestamp.fromDate(DateTime(fromDate.year, fromDate.month, fromDate.day)),
-                  'date_to': Timestamp.fromDate(DateTime(finalTo.year, finalTo.month, finalTo.day)),
+                  'date_from': Timestamp.fromDate(
+                    DateTime(fromDate.year, fromDate.month, fromDate.day),
+                  ),
+                  'date_to': Timestamp.fromDate(
+                    DateTime(finalTo.year, finalTo.month, finalTo.day),
+                  ),
                   'note': noteController.text.trim(),
                 };
                 if (existing == null) {
                   payload['created_at'] = FieldValue.serverTimestamp();
-                  await FirebaseFirestore.instance.collection('notices').add(payload);
+                  await FirebaseFirestore.instance
+                      .collection('notices')
+                      .add(payload);
                 } else {
                   await existing.reference.update(payload);
                 }
@@ -2028,7 +3535,10 @@ class NoticesBoardScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _deleteNotice(BuildContext context, QueryDocumentSnapshot doc) async {
+  Future<void> _deleteNotice(
+    BuildContext context,
+    QueryDocumentSnapshot doc,
+  ) async {
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
       context: context,
@@ -2036,7 +3546,10 @@ class NoticesBoardScreen extends StatelessWidget {
         title: Text(l10n.tr('deleteNotice')),
         content: Text(l10n.tr('deleteNoticeConfirm')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.tr('cancel'))),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.tr('cancel')),
+          ),
           ElevatedButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -2048,30 +3561,46 @@ class NoticesBoardScreen extends StatelessWidget {
     if (confirm != true) return;
     await doc.reference.delete();
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('noticeDeleted'))));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.tr('noticeDeleted'))));
     }
   }
 
-  Widget _buildNoticeCard(BuildContext context, AppLocalizations l10n, QueryDocumentSnapshot doc, bool isUpcoming) {
+  Widget _buildNoticeCard(
+    BuildContext context,
+    AppLocalizations l10n,
+    QueryDocumentSnapshot doc,
+    bool isUpcoming,
+  ) {
     final data = doc.data() as Map<String, dynamic>;
     final title = data['title']?.toString() ?? '';
     final note = data['note']?.toString() ?? '';
     final fromDt = (data['date_from'] as Timestamp).toDate();
     final toDt = (data['date_to'] as Timestamp).toDate();
-    final isSingleDay = fromDt.year == toDt.year && fromDt.month == toDt.month && fromDt.day == toDt.day;
-    final dateLabel = isSingleDay ? _formatDate(fromDt) : '${_formatDate(fromDt)} – ${_formatDate(toDt)}';
+    final isSingleDay =
+        fromDt.year == toDt.year &&
+        fromDt.month == toDt.month &&
+        fromDt.day == toDt.day;
+    final dateLabel = isSingleDay
+        ? _formatDate(fromDt)
+        : '${_formatDate(fromDt)} – ${_formatDate(toDt)}';
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4),
       color: isUpcoming ? Colors.teal.withOpacity(0.05) : null,
       child: ListTile(
-        leading: Icon(Icons.event, color: isUpcoming ? Colors.teal : Colors.grey),
+        leading: Icon(
+          Icons.event,
+          color: isUpcoming ? Colors.teal : Colors.grey,
+        ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(dateLabel),
-            if (note.isNotEmpty) Text(note, style: TextStyle(color: Colors.grey[700])),
+            if (note.isNotEmpty)
+              Text(note, style: TextStyle(color: Colors.grey[700])),
           ],
         ),
         isThreeLine: note.isNotEmpty,
@@ -2080,11 +3609,20 @@ class NoticesBoardScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.edit, size: 20, color: Colors.indigo),
-                    onPressed: () => _showAddOrEditNoticeDialog(context, existing: doc),
+                    icon: const Icon(
+                      Icons.edit,
+                      size: 20,
+                      color: Colors.indigo,
+                    ),
+                    onPressed: () =>
+                        _showAddOrEditNoticeDialog(context, existing: doc),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      size: 20,
+                      color: Colors.red,
+                    ),
                     onPressed: () => _deleteNotice(context, doc),
                   ),
                 ],
@@ -2120,7 +3658,8 @@ class NoticesBoardScreen extends StatelessWidget {
             .where('daycare_id', isEqualTo: daycareId)
             .snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData)
+            return const Center(child: CircularProgressIndicator());
           final docs = snapshot.data!.docs.toList()
             ..sort((a, b) {
               final aFrom = (a['date_from'] as Timestamp).toDate();
@@ -2145,17 +3684,34 @@ class NoticesBoardScreen extends StatelessWidget {
               if (upcoming.isNotEmpty) ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(l10n.tr('upcoming'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  child: Text(
+                    l10n.tr('upcoming'),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
                 ),
-                ...upcoming.map((doc) => _buildNoticeCard(context, l10n, doc, true)),
+                ...upcoming.map(
+                  (doc) => _buildNoticeCard(context, l10n, doc, true),
+                ),
                 const SizedBox(height: 12),
               ],
               if (past.isNotEmpty) ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(l10n.tr('past'), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.grey[600])),
+                  child: Text(
+                    l10n.tr('past'),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: Colors.grey[600],
+                    ),
+                  ),
                 ),
-                ...past.map((doc) => _buildNoticeCard(context, l10n, doc, false)),
+                ...past.map(
+                  (doc) => _buildNoticeCard(context, l10n, doc, false),
+                ),
               ],
             ],
           );
