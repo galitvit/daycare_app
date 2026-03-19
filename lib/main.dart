@@ -200,6 +200,23 @@ class AppLocalizations {
       'sleeping': 'Sleeping',
       'ateMeal': 'Ate meal',
       'languageToggle': 'עב',
+      'noticesBoard': 'Holidays & Vacations',
+      'addNotice': 'Add Notice',
+      'noticeTitleHint': 'Title (e.g. Passover Holiday)',
+      'noticeFrom': 'From',
+      'noticeTo': 'To',
+      'noticeNote': 'Note (optional)',
+      'noNotices': 'No notices posted yet.',
+      'upcoming': 'Upcoming',
+      'past': 'Past',
+      'deleteNotice': 'Delete Notice',
+      'deleteNoticeConfirm': 'Delete this notice?',
+      'noticeDeleted': 'Notice deleted.',
+      'editNotice': 'Edit Notice',
+      'saveNotice': 'Save',
+      'noticeTitleRequired': 'Title is required.',
+      'viewNoticesBoard': 'Holidays & Vacations',
+      'todayNoticeBanner': 'Today',
     },
     'he': {
       'daycareApp': 'אפליקציית מעון',
@@ -300,6 +317,23 @@ class AppLocalizations {
       'sleeping': 'ישן',
       'ateMeal': 'אכל ארוחה',
       'languageToggle': 'EN',
+      'noticesBoard': 'חגים וחופשות',
+      'addNotice': 'הוסף הודעה',
+      'noticeTitleHint': 'כותרת (לדוגמה: חג פסח)',
+      'noticeFrom': 'מתאריך',
+      'noticeTo': 'עד תאריך',
+      'noticeNote': 'הערה (אופציונלי)',
+      'noNotices': 'אין הודעות עדיין.',
+      'upcoming': 'קרוב',
+      'past': 'עבר',
+      'deleteNotice': 'מחק הודעה',
+      'deleteNoticeConfirm': 'למחוק את ההודעה הזו?',
+      'noticeDeleted': 'ההודעה נמחקה.',
+      'editNotice': 'ערוך הודעה',
+      'saveNotice': 'שמור',
+      'noticeTitleRequired': 'כותרת היא שדה חובה.',
+      'viewNoticesBoard': 'חגים וחופשות',
+      'todayNoticeBanner': 'היום',
     },
   };
 }
@@ -315,6 +349,10 @@ String _formatDurationHHmm(Duration duration) {
   final hours = totalMinutes ~/ 60;
   final minutes = totalMinutes % 60;
   return '${hours}:${minutes.toString().padLeft(2, '0')}';
+}
+
+String _formatDate(DateTime dt) {
+  return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';
 }
 
 String _formatLogDetails(AppLocalizations l10n, Map<String, dynamic> logData) {
@@ -1214,7 +1252,15 @@ class TeacherDashboard extends StatelessWidget {
             title: Text(l10n.tr('teacherDashboard')),
             backgroundColor: Colors.teal,
             foregroundColor: Colors.white,
-            actions: [languageToggleAction(context, color: Colors.white), IconButton(icon: const Icon(Icons.logout), onPressed: () => FirebaseAuth.instance.signOut())],
+            actions: [
+              languageToggleAction(context, color: Colors.white),
+              IconButton(
+                icon: const Icon(Icons.event_note),
+                tooltip: l10n.tr('noticesBoard'),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => NoticesBoardScreen(daycareId: daycareId, canEdit: true))),
+              ),
+              IconButton(icon: const Icon(Icons.logout), onPressed: () => FirebaseAuth.instance.signOut()),
+            ],
           ),
           floatingActionButton: FloatingActionButton(onPressed: () => _showAddChildDialog(context, daycareId), child: const Icon(Icons.add, color: Colors.white), backgroundColor: Colors.teal),
           body: StreamBuilder<QuerySnapshot>(
@@ -1300,13 +1346,30 @@ class ParentDashboard extends StatelessWidget {
           }
 
           final children = snapshot.data!.docs;
+          final firstDaycareId = (children.first.data() as Map<String, dynamic>)['daycare_id']?.toString() ?? '';
 
-          return ListView.builder(
-            itemCount: children.length,
+          final listView = ListView.builder(
+            itemCount: children.length + 1,
             itemBuilder: (context, index) {
-              final childData = children[index].data() as Map<String, dynamic>;
+              if (index == 0) {
+                if (firstDaycareId.isEmpty) return const SizedBox.shrink();
+                return Card(
+                  margin: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                  color: Colors.teal.withOpacity(0.08),
+                  child: ListTile(
+                    leading: const Icon(Icons.event_note, color: Colors.teal),
+                    title: Text(l10n.tr('viewNoticesBoard'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => NoticesBoardScreen(daycareId: firstDaycareId, canEdit: false)),
+                    ),
+                  ),
+                );
+              }
+              final childData = children[index - 1].data() as Map<String, dynamic>;
               final childName = childData['name'];
-              final childId = children[index].id;
+              final childId = children[index - 1].id;
               final childDaycareId = childData['daycare_id']?.toString();
 
               return Card(
@@ -1334,6 +1397,69 @@ class ParentDashboard extends StatelessWidget {
                     );
                   },
                 ),
+              );
+            },
+          );
+
+          if (firstDaycareId.isEmpty) return listView;
+
+          return StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('notices')
+                .where('daycare_id', isEqualTo: firstDaycareId)
+                .snapshots(),
+            builder: (context, noticesSnapshot) {
+              final today = DateTime.now();
+              final todayDate = DateTime(today.year, today.month, today.day);
+              final todayNotices = noticesSnapshot.hasData
+                  ? noticesSnapshot.data!.docs.where((doc) {
+                      final data = doc.data() as Map<String, dynamic>;
+                      final from = (data['date_from'] as Timestamp?)?.toDate();
+                      final to = (data['date_to'] as Timestamp?)?.toDate();
+                      if (from == null || to == null) return false;
+                      final fromDate = DateTime(from.year, from.month, from.day);
+                      final toDate = DateTime(to.year, to.month, to.day);
+                      return !todayDate.isBefore(fromDate) && !todayDate.isAfter(toDate);
+                    }).toList()
+                  : <QueryDocumentSnapshot>[];
+
+              if (todayNotices.isEmpty) return listView;
+
+              return Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.teal,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.event_available, color: Colors.white, size: 22),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.tr('todayNoticeBanner'),
+                                style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500),
+                              ),
+                              ...todayNotices.map((doc) {
+                                final title = (doc.data() as Map<String, dynamic>)['title']?.toString() ?? '';
+                                return Text(title, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold));
+                              }),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(child: listView),
+                ],
               );
             },
           );
@@ -1786,6 +1912,252 @@ class _ChildTimelineScreenState extends State<ChildTimelineScreen> {
                 },
               );
             },
+          );
+        },
+      ),
+    );
+  }
+}
+
+// --- NOTICES BOARD ---
+class NoticesBoardScreen extends StatelessWidget {
+  final String daycareId;
+  final bool canEdit;
+  const NoticesBoardScreen({super.key, required this.daycareId, required this.canEdit});
+
+  void _showAddOrEditNoticeDialog(BuildContext context, {QueryDocumentSnapshot? existing}) {
+    final l10n = AppLocalizations.of(context);
+    final data = existing?.data() as Map<String, dynamic>?;
+    final titleController = TextEditingController(text: data?['title']?.toString() ?? '');
+    final noteController = TextEditingController(text: data?['note']?.toString() ?? '');
+    final now = DateTime.now();
+    DateTime fromDate = data != null && data['date_from'] is Timestamp
+        ? (data['date_from'] as Timestamp).toDate()
+        : now;
+    DateTime toDate = data != null && data['date_to'] is Timestamp
+        ? (data['date_to'] as Timestamp).toDate()
+        : now;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setState) => AlertDialog(
+          title: Text(existing == null ? l10n.tr('addNotice') : l10n.tr('editNotice')),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: InputDecoration(
+                    labelText: l10n.tr('noticeTitleHint'),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l10n.tr('noticeFrom')),
+                  trailing: Text(_formatDate(fromDate), style: const TextStyle(fontWeight: FontWeight.bold)),
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: dialogContext,
+                      initialDate: fromDate,
+                      firstDate: DateTime(2024),
+                      lastDate: DateTime(2030),
+                    );
+                    if (picked != null) setState(() => fromDate = picked);
+                  },
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l10n.tr('noticeTo')),
+                  trailing: Text(_formatDate(toDate), style: const TextStyle(fontWeight: FontWeight.bold)),
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: dialogContext,
+                      initialDate: toDate.isBefore(fromDate) ? fromDate : toDate,
+                      firstDate: fromDate,
+                      lastDate: DateTime(2030),
+                    );
+                    if (picked != null) setState(() => toDate = picked);
+                  },
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: noteController,
+                  maxLines: 2,
+                  decoration: InputDecoration(
+                    labelText: l10n.tr('noticeNote'),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.tr('cancel'))),
+            ElevatedButton(
+              onPressed: () async {
+                final title = titleController.text.trim();
+                if (title.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('noticeTitleRequired'))));
+                  return;
+                }
+                final finalTo = toDate.isBefore(fromDate) ? fromDate : toDate;
+                final payload = <String, dynamic>{
+                  'daycare_id': daycareId,
+                  'title': title,
+                  'date_from': Timestamp.fromDate(DateTime(fromDate.year, fromDate.month, fromDate.day)),
+                  'date_to': Timestamp.fromDate(DateTime(finalTo.year, finalTo.month, finalTo.day)),
+                  'note': noteController.text.trim(),
+                };
+                if (existing == null) {
+                  payload['created_at'] = FieldValue.serverTimestamp();
+                  await FirebaseFirestore.instance.collection('notices').add(payload);
+                } else {
+                  await existing.reference.update(payload);
+                }
+                if (dialogContext.mounted) Navigator.pop(dialogContext);
+              },
+              child: Text(l10n.tr('saveNotice')),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _deleteNotice(BuildContext context, QueryDocumentSnapshot doc) async {
+    final l10n = AppLocalizations.of(context);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.tr('deleteNotice')),
+        content: Text(l10n.tr('deleteNoticeConfirm')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.tr('cancel'))),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text(l10n.tr('delete')),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    await doc.reference.delete();
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('noticeDeleted'))));
+    }
+  }
+
+  Widget _buildNoticeCard(BuildContext context, AppLocalizations l10n, QueryDocumentSnapshot doc, bool isUpcoming) {
+    final data = doc.data() as Map<String, dynamic>;
+    final title = data['title']?.toString() ?? '';
+    final note = data['note']?.toString() ?? '';
+    final fromDt = (data['date_from'] as Timestamp).toDate();
+    final toDt = (data['date_to'] as Timestamp).toDate();
+    final isSingleDay = fromDt.year == toDt.year && fromDt.month == toDt.month && fromDt.day == toDt.day;
+    final dateLabel = isSingleDay ? _formatDate(fromDt) : '${_formatDate(fromDt)} – ${_formatDate(toDt)}';
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      color: isUpcoming ? Colors.teal.withOpacity(0.05) : null,
+      child: ListTile(
+        leading: Icon(Icons.event, color: isUpcoming ? Colors.teal : Colors.grey),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(dateLabel),
+            if (note.isNotEmpty) Text(note, style: TextStyle(color: Colors.grey[700])),
+          ],
+        ),
+        isThreeLine: note.isNotEmpty,
+        trailing: canEdit
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, size: 20, color: Colors.indigo),
+                    onPressed: () => _showAddOrEditNoticeDialog(context, existing: doc),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                    onPressed: () => _deleteNotice(context, doc),
+                  ),
+                ],
+              )
+            : null,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.tr('noticesBoard')),
+        backgroundColor: Colors.teal,
+        foregroundColor: Colors.white,
+        actions: [languageToggleAction(context, color: Colors.white)],
+      ),
+      floatingActionButton: canEdit
+          ? FloatingActionButton(
+              onPressed: () => _showAddOrEditNoticeDialog(context),
+              backgroundColor: Colors.teal,
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('notices')
+            .where('daycare_id', isEqualTo: daycareId)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          final docs = snapshot.data!.docs.toList()
+            ..sort((a, b) {
+              final aFrom = (a['date_from'] as Timestamp).toDate();
+              final bFrom = (b['date_from'] as Timestamp).toDate();
+              return aFrom.compareTo(bFrom);
+            });
+
+          if (docs.isEmpty) return Center(child: Text(l10n.tr('noNotices')));
+
+          final upcoming = docs.where((d) {
+            final to = (d['date_to'] as Timestamp).toDate();
+            return !DateTime(to.year, to.month, to.day).isBefore(todayDate);
+          }).toList();
+          final past = docs.where((d) {
+            final to = (d['date_to'] as Timestamp).toDate();
+            return DateTime(to.year, to.month, to.day).isBefore(todayDate);
+          }).toList();
+
+          return ListView(
+            padding: const EdgeInsets.all(12),
+            children: [
+              if (upcoming.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(l10n.tr('upcoming'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                ),
+                ...upcoming.map((doc) => _buildNoticeCard(context, l10n, doc, true)),
+                const SizedBox(height: 12),
+              ],
+              if (past.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(l10n.tr('past'), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.grey[600])),
+                ),
+                ...past.map((doc) => _buildNoticeCard(context, l10n, doc, false)),
+              ],
+            ],
           );
         },
       ),
