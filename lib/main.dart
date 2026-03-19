@@ -45,10 +45,70 @@ class _DaycareAppState extends State<DaycareApp> {
     final l10n = AppLocalizations(_locale);
     return MaterialApp(
       title: l10n.tr('daycareApp'),
+      // --- MASSIVE UI UPGRADE HERE ---
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
+        // 1. Soft Pastel Background for the whole app
+        scaffoldBackgroundColor: Colors.transparent, 
+        
+        // 2. Playful, rounded AppBars
+        appBarTheme: AppBarTheme(
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: Colors.teal.shade400,
+          foregroundColor: Colors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
+          ),
+        ),
+        
+       // 3. Floating, soft-shadow Cards
+        cardTheme: CardThemeData( // <-- Added 'Data' here
+          elevation: 8,
+          shadowColor: Colors.teal.shade900.withOpacity(0.12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          color: Colors.white,
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        ),
+        
+        // 4. Friendly, rounded Dialogs
+        dialogTheme: DialogThemeData( // <-- Added 'Data' here
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+          backgroundColor: Colors.white,
+        ),
+        
+        // 5. Chunky, tappable Buttons
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            backgroundColor: Colors.teal.shade500,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        
+        // 6. Playful Floating Action Buttons
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: Colors.orange.shade400,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          elevation: 6,
+        ),
+        
+        // 7. Soft Text Fields
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.teal.shade50.withOpacity(0.5),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide.none,
+          ),
+          floatingLabelStyle: TextStyle(color: Colors.teal.shade700, fontWeight: FontWeight.bold),
+        ),
       ),
+      // -------------------------------
       locale: _locale,
       supportedLocales: const [Locale('en'), Locale('he')],
       localizationsDelegates: const [
@@ -56,6 +116,22 @@ class _DaycareAppState extends State<DaycareApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      builder: (context, child) {
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.teal.shade100,
+                Colors.blue.shade50,
+                Colors.orange.shade100,
+              ],
+            ),
+          ),
+          child: child,
+        );
+      },
       home: AuthRouter(),
     );
   }
@@ -887,6 +963,7 @@ class AuthRouter extends StatelessWidget {
 }
 
 // --- AUTH SCREEN ---
+// --- AUTH SCREEN ---
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
   @override
@@ -896,7 +973,7 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _phoneController = TextEditingController(); // NEW
+  final _phoneController = TextEditingController();
   bool _isLogin = true;
   bool _isLoading = false;
 
@@ -906,9 +983,7 @@ class _AuthScreenState extends State<AuthScreen> {
       throw FirebaseAuthException(code: 'missing-email');
     }
 
-    final userRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid);
+    final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
     final userDoc = await userRef.get();
 
     if (userDoc.exists) {
@@ -920,10 +995,7 @@ class _AuthScreenState extends State<AuthScreen> {
       return;
     }
 
-    final inviteDoc = await FirebaseFirestore.instance
-        .collection('teacher_invites')
-        .doc(email)
-        .get();
+    final inviteDoc = await FirebaseFirestore.instance.collection('teacher_invites').doc(email).get();
     String assignedRole = 'parent';
     String? assignedDaycareId;
 
@@ -949,23 +1021,17 @@ class _AuthScreenState extends State<AuthScreen> {
       UserCredential userCredential;
 
       if (kIsWeb) {
-        userCredential = await FirebaseAuth.instance.signInWithPopup(
-          GoogleAuthProvider(),
-        );
+        userCredential = await FirebaseAuth.instance.signInWithPopup(GoogleAuthProvider());
       } else {
         final googleUser = await GoogleSignIn().signIn();
-        if (googleUser == null) {
-          return;
-        }
+        if (googleUser == null) return;
 
         final googleAuth = await googleUser.authentication;
         final credential = GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
-        userCredential = await FirebaseAuth.instance.signInWithCredential(
-          credential,
-        );
+        userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       }
 
       final user = userCredential.user;
@@ -975,11 +1041,7 @@ class _AuthScreenState extends State<AuthScreen> {
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              _authErrorMessage(e, l10n, fallbackKey: 'googleSignInFailed'),
-            ),
-          ),
+          SnackBar(content: Text(_authErrorMessage(e, l10n, fallbackKey: 'googleSignInFailed'))),
         );
       }
     } catch (_) {
@@ -1000,32 +1062,22 @@ class _AuthScreenState extends State<AuthScreen> {
     final phone = _phoneController.text.trim();
 
     if (!_isLogin && (email.isEmpty || password.isEmpty || phone.isEmpty)) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.tr('allFieldsMandatory'))));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('allFieldsMandatory'))));
       return;
     }
 
     setState(() => _isLoading = true);
     try {
       if (_isLogin) {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
+        await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       } else {
-        final userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: email, password: password);
+        final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
         await _upsertUserProfile(userCredential.user!, phone: phone);
       }
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              _authErrorMessage(e, l10n, fallbackKey: 'genericError'),
-            ),
-          ),
+          SnackBar(content: Text(_authErrorMessage(e, l10n, fallbackKey: 'genericError'))),
         );
       }
     } finally {
@@ -1033,11 +1085,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  String _authErrorMessage(
-    FirebaseAuthException error,
-    AppLocalizations l10n, {
-    required String fallbackKey,
-  }) {
+  String _authErrorMessage(FirebaseAuthException error, AppLocalizations l10n, {required String fallbackKey}) {
     switch (error.code) {
       case 'missing-email':
         return l10n.tr('missingEmail');
@@ -1046,116 +1094,219 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  // Helper widget for playful text fields
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool isPassword = false,
+    VoidCallback? onSubmitted,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: isPassword,
+      onSubmitted: (_) => onSubmitted?.call(),
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.teal.shade300),
+        filled: true,
+        fillColor: Colors.teal.shade50.withOpacity(0.5),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide.none,
+        ),
+        floatingLabelStyle: TextStyle(color: Colors.teal.shade700, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(_isLogin ? l10n.tr('login') : l10n.tr('signUp')),
-        actions: [languageToggleAction(context)],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.family_restroom, size: 80, color: Colors.teal),
-            const SizedBox(height: 32),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: l10n.tr('email'),
-                border: const OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            if (!_isLogin) ...[
-              TextField(
-                controller: _phoneController,
-                decoration: InputDecoration(
-                  labelText: l10n.tr('phoneNumber'),
-                  border: const OutlineInputBorder(),
+      // We remove the AppBar entirely for a cleaner, full-screen look
+      body: Container(
+        // Soft, playful gradient background
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.teal.shade100,
+              Colors.blue.shade50,
+              Colors.orange.shade100,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              // Language toggle positioned playfully at the top corner
+              Positioned(
+                top: 8,
+                right: l10n.isHebrew ? null : 16,
+                left: l10n.isHebrew ? 16 : null,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: languageToggleAction(context, color: Colors.teal.shade800),
                 ),
               ),
-              const SizedBox(height: 16),
-            ],
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(
-                labelText: l10n.tr('password'),
-                border: const OutlineInputBorder(),
-              ),
-              obscureText: true,
-              onSubmitted: (_) => _submitAuth(),
-            ),
-            const SizedBox(height: 24),
-            _isLoading
-                ? const CircularProgressIndicator()
-                : SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _submitAuth,
-                      child: Text(
-                        _isLogin ? l10n.tr('login') : l10n.tr('signUp'),
+              
+              Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Playful Header Icon
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10)),
+                          ],
+                        ),
+                        child: const Icon(Icons.wb_sunny_rounded, size: 70, color: Colors.orangeAccent),
                       ),
-                    ),
-                  ),
-            const SizedBox(height: 12),
-            _isLoading
-                ? const SizedBox.shrink()
-                : SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: const Color.fromRGBO(0, 0, 0, 0.9),
-                        side: BorderSide(color: Colors.grey.shade300),
-                        shape: const StadiumBorder(),
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                      const SizedBox(height: 16),
+                      
+                      // App Title
+                      Text(
+                        l10n.tr('daycareApp'),
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.teal.shade800,
+                          letterSpacing: 1.2,
+                        ),
                       ),
-                      onPressed: _signInWithGoogle,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(
-                            width: 28,
-                            height: 28,
-                            child: Image(
-                              image: AssetImage(
-                                'assets/logos/google_light.png',
-                                package: 'sign_in_button',
+                      const SizedBox(height: 32),
+
+                      // The White "Card" holding the form
+                      Container(
+                        padding: const EdgeInsets.all(28),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(32),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.teal.shade900.withOpacity(0.08),
+                              blurRadius: 24,
+                              offset: const Offset(0, 12),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              _isLogin ? l10n.tr('login') : l10n.tr('signUp'),
+                              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+                            ),
+                            const SizedBox(height: 24),
+                            
+                            _buildTextField(
+                              controller: _emailController,
+                              label: l10n.tr('email'),
+                              icon: Icons.email_outlined,
+                            ),
+                            const SizedBox(height: 16),
+                            
+                            if (!_isLogin) ...[
+                              _buildTextField(
+                                controller: _phoneController,
+                                label: l10n.tr('phoneNumber'),
+                                icon: Icons.phone_android_rounded,
                               ),
-                              fit: BoxFit.contain,
+                              const SizedBox(height: 16),
+                            ],
+                            
+                            _buildTextField(
+                              controller: _passwordController,
+                              label: l10n.tr('password'),
+                              icon: Icons.lock_outline_rounded,
+                              isPassword: true,
+                              onSubmitted: _submitAuth,
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            _isLogin
-                                ? l10n.tr('loginWithGoogle')
-                                : l10n.tr('signUpWithGoogle'),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                            const SizedBox(height: 32),
+                            
+                            _isLoading
+                                ? const CircularProgressIndicator()
+                                : SizedBox(
+                                    width: double.infinity,
+                                    height: 56, // Chunky, tappable button
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.teal.shade500,
+                                        foregroundColor: Colors.white,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                      ),
+                                      onPressed: _submitAuth,
+                                      child: Text(
+                                        _isLogin ? l10n.tr('login') : l10n.tr('signUp'),
+                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+                            const SizedBox(height: 16),
+                            
+                            _isLoading
+                                ? const SizedBox.shrink()
+                                : SizedBox(
+                                    width: double.infinity,
+                                    height: 56,
+                                    child: OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: Colors.black87,
+                                        side: BorderSide(color: Colors.grey.shade300, width: 1.5),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                      ),
+                                      onPressed: _signInWithGoogle,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          const SizedBox(
+                                            width: 24, height: 24,
+                                            child: Image(
+                                              image: AssetImage('assets/logos/google_light.png', package: 'sign_in_button'),
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Text(
+                                            _isLogin ? l10n.tr('loginWithGoogle') : l10n.tr('signUpWithGoogle'),
+                                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                            
+                            const SizedBox(height: 16),
+                            TextButton(
+                              style: TextButton.styleFrom(foregroundColor: Colors.teal.shade700),
+                              onPressed: () => setState(() => _isLogin = !_isLogin),
+                              child: Text(
+                                _isLogin ? l10n.tr('createAccount') : l10n.tr('alreadyHaveAccount'),
+                                style: const TextStyle(fontWeight: FontWeight.w600),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-            TextButton(
-              onPressed: () => setState(() => _isLogin = !_isLogin),
-              child: Text(
-                _isLogin
-                    ? l10n.tr('createAccount')
-                    : l10n.tr('alreadyHaveAccount'),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -1233,7 +1384,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.tr('adminDashboard')),
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.purple.shade300,
         foregroundColor: Colors.white,
         actions: [
           languageToggleAction(context, color: Colors.white),
@@ -1930,7 +2081,7 @@ class TeacherDashboard extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: Text(l10n.tr('teacherDashboard')),
-            backgroundColor: Colors.teal,
+            backgroundColor: Colors.teal.shade400,
             foregroundColor: Colors.white,
             actions: [
               languageToggleAction(context, color: Colors.white),
@@ -2388,7 +2539,7 @@ class ParentDashboard extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.tr('myChildren')),
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.blue.shade400,
         foregroundColor: Colors.white,
         actions: [
           languageToggleAction(context, color: Colors.white),
@@ -2464,9 +2615,13 @@ class ParentDashboard extends StatelessWidget {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const CircleAvatar(
-                        backgroundColor: Colors.indigo,
-                        child: Icon(Icons.child_care, color: Colors.white),
+                      leading: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade100,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.face_retouching_natural, color: Colors.orange, size: 28),
                       ),
                       title: Text(
                         childName,
