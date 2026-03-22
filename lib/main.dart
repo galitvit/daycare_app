@@ -990,7 +990,7 @@ class AuthRouter extends StatelessWidget {
             body: Center(child: CircularProgressIndicator()),
           );
         if (!authSnapshot.hasData || authSnapshot.data == null)
-          return const AuthScreen();
+          return AuthScreen();
 
         final user = authSnapshot.data!;
         return StreamBuilder<DocumentSnapshot>(
@@ -4489,6 +4489,19 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   String? _selectedFileName;
   bool _uploading = false;
 
+  // 1. Declare the stream variable
+  late Stream<QuerySnapshot> _documentsStream;
+  
+  @override
+  void initState() {
+    super.initState();
+    // 2. Initialize the stream ONCE when the screen loads
+    _documentsStream = FirebaseFirestore.instance
+        .collection('documents')
+        .where('daycare_id', isEqualTo: widget.daycareId)
+        .snapshots();
+  }
+
   Future<void> _selectFile() async {
     try {
       final result = await FilePicker.platform.pickFiles();
@@ -4679,12 +4692,15 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('documents')
-                  .where('daycare_id', isEqualTo: widget.daycareId)
-                  .orderBy('uploaded_at', descending: true)
-                  .snapshots(),
+              stream: _documentsStream, // <-- Replace that whole Firebase instance block with this variable
               builder: (context, snapshot) {
+                // 1. Add an error check so we never fly blind again!
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Something went wrong: ${snapshot.error}'),
+                  );
+                }
+
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -4698,7 +4714,17 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   );
                 }
 
-                final docs = snapshot.data!.docs;
+                // 2. Sort the documents locally in Dart instead of Firestore
+                final docs = snapshot.data!.docs.toList();
+                docs.sort((a, b) {
+                  final aData = a.data() as Map<String, dynamic>;
+                  final bData = b.data() as Map<String, dynamic>;
+                  final aTime = aData['uploaded_at'] as Timestamp?;
+                  final bTime = bData['uploaded_at'] as Timestamp?;
+                  
+                  if (aTime == null || bTime == null) return 0;
+                  return bTime.compareTo(aTime); // Descending (newest first)
+                });
 
                 return ListView.builder(
                   itemCount: docs.length,
@@ -4710,6 +4736,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                     final uploadedBy = data['uploaded_by'] ?? 'Unknown';
 
                     return Card(
+                      key: ValueKey(doc.id),
                       margin: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 8,
@@ -4751,7 +4778,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                                 ),
                                 tooltip: l10n.tr('downloadDocument'),
                                 onPressed: () {
-                                  // In a real app, this would download the file
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text('Download: $fileName'),
