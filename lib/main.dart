@@ -50,8 +50,8 @@ class _DaycareAppState extends State<DaycareApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
         // 1. Soft Pastel Background for the whole app
-        scaffoldBackgroundColor: Colors.transparent, 
-        
+        scaffoldBackgroundColor: Colors.transparent,
+
         // 2. Playful, rounded AppBars
         appBarTheme: AppBarTheme(
           centerTitle: true,
@@ -62,41 +62,51 @@ class _DaycareAppState extends State<DaycareApp> {
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
           ),
         ),
-        
-       // 3. Floating, soft-shadow Cards
-        cardTheme: CardThemeData( // <-- Added 'Data' here
+
+        // 3. Floating, soft-shadow Cards
+        cardTheme: CardThemeData(
+          // <-- Added 'Data' here
           elevation: 8,
           shadowColor: Colors.teal.shade900.withOpacity(0.12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
           color: Colors.white,
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ),
-        
+
         // 4. Friendly, rounded Dialogs
-        dialogTheme: DialogThemeData( // <-- Added 'Data' here
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        dialogTheme: DialogThemeData(
+          // <-- Added 'Data' here
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
           backgroundColor: Colors.white,
         ),
-        
+
         // 5. Chunky, tappable Buttons
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             elevation: 0,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             backgroundColor: Colors.teal.shade500,
             foregroundColor: Colors.white,
           ),
         ),
-        
+
         // 6. Playful Floating Action Buttons
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: Colors.orange.shade400,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
           elevation: 6,
         ),
-        
+
         // 7. Soft Text Fields
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
@@ -105,7 +115,10 @@ class _DaycareAppState extends State<DaycareApp> {
             borderRadius: BorderRadius.circular(20),
             borderSide: BorderSide.none,
           ),
-          floatingLabelStyle: TextStyle(color: Colors.teal.shade700, fontWeight: FontWeight.bold),
+          floatingLabelStyle: TextStyle(
+            color: Colors.teal.shade700,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       // -------------------------------
@@ -325,6 +338,23 @@ class AppLocalizations {
       'noticeTitleRequired': 'Title is required.',
       'viewNoticesBoard': 'Holidays & Vacations',
       'todayNoticeBanner': 'Today',
+      'weeklyMealPlan': 'Weekly Meal Plan',
+      'viewWeeklyMealPlan': 'Weekly Meal Plan',
+      'breakfast': 'Breakfast',
+      'lunch': 'Lunch',
+      'afterLunchTreat': 'After Lunch Treat',
+      'saveMealPlan': 'Save Meal Plan',
+      'mealPlanSaved': 'Meal plan saved.',
+      'weekOf': 'Week of {date}',
+      'noMealPlanYet': 'No meal plan posted for this week.',
+      'sunday': 'Sunday',
+      'monday': 'Monday',
+      'tuesday': 'Tuesday',
+      'wednesday': 'Wednesday',
+      'thursday': 'Thursday',
+      'friday': 'Friday',
+      'saturday': 'Saturday',
+
     },
     'he': {
       'daycareApp': 'אפליקציית מעון',
@@ -462,6 +492,22 @@ class AppLocalizations {
       'noticeTitleRequired': 'כותרת היא שדה חובה.',
       'viewNoticesBoard': 'חגים וחופשות',
       'todayNoticeBanner': 'היום',
+      'weeklyMealPlan': 'תפריט שבועי',
+      'viewWeeklyMealPlan': 'תפריט שבועי',
+      'breakfast': 'ארוחת בוקר',
+      'lunch': 'ארוחת צהריים',
+      'afterLunchTreat': 'קינוח',
+      'saveMealPlan': 'שמור תפריט',
+      'mealPlanSaved': 'התפריט נשמר.',
+      'weekOf': 'שבוע של {date}',
+      'noMealPlanYet': 'לא נמצא תפריט לשבוע זה.',
+      'sunday': 'יום ראשון',
+      'monday': 'יום שני',
+      'tuesday': 'יום שלישי',
+      'wednesday': 'יום רביעי',
+      'thursday': 'יום חמישי',
+      'friday': 'יום שישי',
+      'saturday': 'יום שבת',
     },
   };
 }
@@ -983,7 +1029,9 @@ class _AuthScreenState extends State<AuthScreen> {
       throw FirebaseAuthException(code: 'missing-email');
     }
 
-    final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid);
     final userDoc = await userRef.get();
 
     if (userDoc.exists) {
@@ -995,7 +1043,10 @@ class _AuthScreenState extends State<AuthScreen> {
       return;
     }
 
-    final inviteDoc = await FirebaseFirestore.instance.collection('teacher_invites').doc(email).get();
+    final inviteDoc = await FirebaseFirestore.instance
+        .collection('teacher_invites')
+        .doc(email)
+        .get();
     String assignedRole = 'parent';
     String? assignedDaycareId;
 
@@ -1021,7 +1072,9 @@ class _AuthScreenState extends State<AuthScreen> {
       UserCredential userCredential;
 
       if (kIsWeb) {
-        userCredential = await FirebaseAuth.instance.signInWithPopup(GoogleAuthProvider());
+        userCredential = await FirebaseAuth.instance.signInWithPopup(
+          GoogleAuthProvider(),
+        );
       } else {
         final googleUser = await GoogleSignIn().signIn();
         if (googleUser == null) return;
@@ -1031,7 +1084,9 @@ class _AuthScreenState extends State<AuthScreen> {
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
-        userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+        userCredential = await FirebaseAuth.instance.signInWithCredential(
+          credential,
+        );
       }
 
       final user = userCredential.user;
@@ -1041,7 +1096,11 @@ class _AuthScreenState extends State<AuthScreen> {
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_authErrorMessage(e, l10n, fallbackKey: 'googleSignInFailed'))),
+          SnackBar(
+            content: Text(
+              _authErrorMessage(e, l10n, fallbackKey: 'googleSignInFailed'),
+            ),
+          ),
         );
       }
     } catch (_) {
@@ -1062,22 +1121,32 @@ class _AuthScreenState extends State<AuthScreen> {
     final phone = _phoneController.text.trim();
 
     if (!_isLogin && (email.isEmpty || password.isEmpty || phone.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tr('allFieldsMandatory'))));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.tr('allFieldsMandatory'))));
       return;
     }
 
     setState(() => _isLoading = true);
     try {
       if (_isLogin) {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
       } else {
-        final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+        final userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password);
         await _upsertUserProfile(userCredential.user!, phone: phone);
       }
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_authErrorMessage(e, l10n, fallbackKey: 'genericError'))),
+          SnackBar(
+            content: Text(
+              _authErrorMessage(e, l10n, fallbackKey: 'genericError'),
+            ),
+          ),
         );
       }
     } finally {
@@ -1085,7 +1154,11 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  String _authErrorMessage(FirebaseAuthException error, AppLocalizations l10n, {required String fallbackKey}) {
+  String _authErrorMessage(
+    FirebaseAuthException error,
+    AppLocalizations l10n, {
+    required String fallbackKey,
+  }) {
     switch (error.code) {
       case 'missing-email':
         return l10n.tr('missingEmail');
@@ -1115,7 +1188,10 @@ class _AuthScreenState extends State<AuthScreen> {
           borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide.none,
         ),
-        floatingLabelStyle: TextStyle(color: Colors.teal.shade700, fontWeight: FontWeight.bold),
+        floatingLabelStyle: TextStyle(
+          color: Colors.teal.shade700,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
@@ -1123,7 +1199,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    
+
     return Scaffold(
       // We remove the AppBar entirely for a cleaner, full-screen look
       body: Container(
@@ -1152,13 +1228,19 @@ class _AuthScreenState extends State<AuthScreen> {
                     color: Colors.white.withOpacity(0.6),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: languageToggleAction(context, color: Colors.teal.shade800),
+                  child: languageToggleAction(
+                    context,
+                    color: Colors.teal.shade800,
+                  ),
                 ),
               ),
-              
+
               Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 16.0,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -1169,13 +1251,21 @@ class _AuthScreenState extends State<AuthScreen> {
                           color: Colors.white.withOpacity(0.8),
                           shape: BoxShape.circle,
                           boxShadow: [
-                            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10)),
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
                           ],
                         ),
-                        child: const Icon(Icons.wb_sunny_rounded, size: 70, color: Colors.orangeAccent),
+                        child: const Icon(
+                          Icons.wb_sunny_rounded,
+                          size: 70,
+                          color: Colors.orangeAccent,
+                        ),
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // App Title
                       Text(
                         l10n.tr('daycareApp'),
@@ -1206,17 +1296,21 @@ class _AuthScreenState extends State<AuthScreen> {
                           children: [
                             Text(
                               _isLogin ? l10n.tr('login') : l10n.tr('signUp'),
-                              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
                             ),
                             const SizedBox(height: 24),
-                            
+
                             _buildTextField(
                               controller: _emailController,
                               label: l10n.tr('email'),
                               icon: Icons.email_outlined,
                             ),
                             const SizedBox(height: 16),
-                            
+
                             if (!_isLogin) ...[
                               _buildTextField(
                                 controller: _phoneController,
@@ -1225,7 +1319,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                               const SizedBox(height: 16),
                             ],
-                            
+
                             _buildTextField(
                               controller: _passwordController,
                               label: l10n.tr('password'),
@@ -1234,7 +1328,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               onSubmitted: _submitAuth,
                             ),
                             const SizedBox(height: 32),
-                            
+
                             _isLoading
                                 ? const CircularProgressIndicator()
                                 : SizedBox(
@@ -1245,17 +1339,26 @@ class _AuthScreenState extends State<AuthScreen> {
                                         backgroundColor: Colors.teal.shade500,
                                         foregroundColor: Colors.white,
                                         elevation: 0,
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
                                       ),
                                       onPressed: _submitAuth,
                                       child: Text(
-                                        _isLogin ? l10n.tr('login') : l10n.tr('signUp'),
-                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                        _isLogin
+                                            ? l10n.tr('login')
+                                            : l10n.tr('signUp'),
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                   ),
                             const SizedBox(height: 16),
-                            
+
                             _isLoading
                                 ? const SizedBox.shrink()
                                 : SizedBox(
@@ -1265,37 +1368,61 @@ class _AuthScreenState extends State<AuthScreen> {
                                       style: OutlinedButton.styleFrom(
                                         backgroundColor: Colors.white,
                                         foregroundColor: Colors.black87,
-                                        side: BorderSide(color: Colors.grey.shade300, width: 1.5),
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                        side: BorderSide(
+                                          color: Colors.grey.shade300,
+                                          width: 1.5,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
                                       ),
                                       onPressed: _signInWithGoogle,
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           const SizedBox(
-                                            width: 24, height: 24,
+                                            width: 24,
+                                            height: 24,
                                             child: Image(
-                                              image: AssetImage('assets/logos/google_light.png', package: 'sign_in_button'),
+                                              image: AssetImage(
+                                                'assets/logos/google_light.png',
+                                                package: 'sign_in_button',
+                                              ),
                                               fit: BoxFit.contain,
                                             ),
                                           ),
                                           const SizedBox(width: 12),
                                           Text(
-                                            _isLogin ? l10n.tr('loginWithGoogle') : l10n.tr('signUpWithGoogle'),
-                                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                            _isLogin
+                                                ? l10n.tr('loginWithGoogle')
+                                                : l10n.tr('signUpWithGoogle'),
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
-                            
+
                             const SizedBox(height: 16),
                             TextButton(
-                              style: TextButton.styleFrom(foregroundColor: Colors.teal.shade700),
-                              onPressed: () => setState(() => _isLogin = !_isLogin),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.teal.shade700,
+                              ),
+                              onPressed: () =>
+                                  setState(() => _isLogin = !_isLogin),
                               child: Text(
-                                _isLogin ? l10n.tr('createAccount') : l10n.tr('alreadyHaveAccount'),
-                                style: const TextStyle(fontWeight: FontWeight.w600),
+                                _isLogin
+                                    ? l10n.tr('createAccount')
+                                    : l10n.tr('alreadyHaveAccount'),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                           ],
@@ -2097,6 +2224,19 @@ class TeacherDashboard extends StatelessWidget {
                 ),
               ),
               IconButton(
+                icon: const Icon(Icons.restaurant_menu),
+                tooltip: l10n.tr('weeklyMealPlan'),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => WeeklyMealPlanScreen(
+                      daycareId: daycareId,
+                      canEdit: true,
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(
                 icon: const Icon(Icons.logout),
                 onPressed: () => FirebaseAuth.instance.signOut(),
               ),
@@ -2316,7 +2456,7 @@ class TeacherDashboard extends StatelessWidget {
                                               ),
                                             ],
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                 ],
@@ -2582,26 +2722,57 @@ class ParentDashboard extends StatelessWidget {
             itemBuilder: (context, index) {
               if (index == 0) {
                 if (firstDaycareId.isEmpty) return const SizedBox.shrink();
-                return Card(
-                  margin: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-                  color: Colors.teal.withOpacity(0.08),
-                  child: ListTile(
-                    leading: const Icon(Icons.event_note, color: Colors.teal),
-                    title: Text(
-                      l10n.tr('viewNoticesBoard'),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => NoticesBoardScreen(
-                          daycareId: firstDaycareId,
-                          canEdit: false,
+                return Column(
+                  children: [
+                    Card(
+                      margin: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                      color: Colors.teal.withOpacity(0.08),
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.event_note,
+                          color: Colors.teal,
+                        ),
+                        title: Text(
+                          l10n.tr('viewNoticesBoard'),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => NoticesBoardScreen(
+                              daycareId: firstDaycareId,
+                              canEdit: false,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    Card(
+                      margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                      color: Colors.orange.withOpacity(0.08),
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.restaurant_menu,
+                          color: Colors.orange,
+                        ),
+                        title: Text(
+                          l10n.tr('viewWeeklyMealPlan'),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => WeeklyMealPlanScreen(
+                              daycareId: firstDaycareId,
+                              canEdit: false,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               }
               final childData =
@@ -2621,7 +2792,11 @@ class ParentDashboard extends StatelessWidget {
                           color: Colors.orange.shade100,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.face_retouching_natural, color: Colors.orange, size: 28),
+                        child: const Icon(
+                          Icons.face_retouching_natural,
+                          color: Colors.orange,
+                          size: 28,
+                        ),
                       ),
                       title: Text(
                         childName,
@@ -2669,11 +2844,36 @@ class ParentDashboard extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => ChildTimelineScreen(
-                              childId: childId,
-                              childName: childName,
+                          PageRouteBuilder(
+                            transitionDuration: const Duration(
+                              milliseconds: 170,
                             ),
+                            reverseTransitionDuration: const Duration(
+                              milliseconds: 140,
+                            ),
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    ChildTimelineScreen(
+                                      childId: childId,
+                                      childName: childName,
+                                    ),
+                            transitionsBuilder:
+                                (
+                                  context,
+                                  animation,
+                                  secondaryAnimation,
+                                  child,
+                                ) {
+                                  final curved = CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.easeOutCubic,
+                                    reverseCurve: Curves.easeInCubic,
+                                  );
+                                  return FadeTransition(
+                                    opacity: curved,
+                                    child: child,
+                                  );
+                                },
                           ),
                         );
                       },
@@ -2726,70 +2926,88 @@ class ParentDashboard extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Divider(height: 1),
-                              const SizedBox(height: 12),
-                              Text(
-                                l10n.tr('absenceReports'),
-                                style: TextStyle(
-                                  color: Colors.grey[700],
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              ...parentAbsences.map((doc) {
-                                final data = doc.data() as Map<String, dynamic>;
-                                final detailsText = _formatLogDetails(
-                                  l10n,
-                                  data,
-                                );
-                                return ListTile(
-                                  dense: true,
-                                  contentPadding: const EdgeInsets.symmetric(
+                              Theme(
+                                data: Theme.of(
+                                  context,
+                                ).copyWith(dividerColor: Colors.transparent),
+                                child: ExpansionTile(
+                                  key: PageStorageKey(
+                                    'parent_absences_$childId',
+                                  ),
+                                  tilePadding: const EdgeInsets.symmetric(
                                     horizontal: 4,
                                   ),
-                                  leading: Icon(
-                                    _activityIconForType('absence'),
-                                    color: _activityIconColorForType('absence'),
-                                    size: 20,
+                                  childrenPadding: const EdgeInsets.only(
+                                    bottom: 8,
                                   ),
                                   title: Text(
-                                    detailsText,
-                                    style: const TextStyle(fontSize: 13),
+                                    '${l10n.tr('absenceReports')} (${parentAbsences.length})',
+                                    style: TextStyle(
+                                      color: Colors.grey[700],
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.edit,
-                                          size: 18,
-                                          color: Colors.indigo,
+                                  children: parentAbsences.map((doc) {
+                                    final data =
+                                        doc.data() as Map<String, dynamic>;
+                                    final detailsText = _formatLogDetails(
+                                      l10n,
+                                      data,
+                                    );
+                                    return ListTile(
+                                      dense: true,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                          ),
+                                      leading: Icon(
+                                        _activityIconForType('absence'),
+                                        color: _activityIconColorForType(
+                                          'absence',
                                         ),
-                                        tooltip: l10n.tr('editAbsence'),
-                                        onPressed: () => _showAbsenceDialog(
-                                          context,
-                                          childId: childId,
-                                          existing: doc,
-                                        ),
+                                        size: 20,
                                       ),
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.delete_outline,
-                                          size: 18,
-                                          color: Colors.red,
-                                        ),
-                                        tooltip: l10n.tr('deleteActivity'),
-                                        onPressed: () => _deleteAbsenceReport(
-                                          context,
-                                          absenceDoc: doc,
-                                        ),
+                                      title: Text(
+                                        detailsText,
+                                        style: const TextStyle(fontSize: 13),
                                       ),
-                                    ],
-                                  ),
-                                );
-                              }),
+                                      trailing: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(
+                                              Icons.edit,
+                                              size: 18,
+                                              color: Colors.indigo,
+                                            ),
+                                            tooltip: l10n.tr('editAbsence'),
+                                            onPressed: () => _showAbsenceDialog(
+                                              context,
+                                              childId: childId,
+                                              existing: doc,
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(
+                                              Icons.delete_outline,
+                                              size: 18,
+                                              color: Colors.red,
+                                            ),
+                                            tooltip: l10n.tr('deleteActivity'),
+                                            onPressed: () =>
+                                                _deleteAbsenceReport(
+                                                  context,
+                                                  absenceDoc: doc,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
                             ],
                           ),
                         );
@@ -3873,6 +4091,316 @@ class NoticesBoardScreen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WEEKLY MEAL PLAN SCREEN
+// ─────────────────────────────────────────────────────────────────────────────
+class WeeklyMealPlanScreen extends StatefulWidget {
+  final String daycareId;
+  final bool canEdit;
+
+  const WeeklyMealPlanScreen({
+    super.key,
+    required this.daycareId,
+    required this.canEdit,
+  });
+
+  @override
+  State<WeeklyMealPlanScreen> createState() => _WeeklyMealPlanScreenState();
+}
+
+class _WeeklyMealPlanScreenState extends State<WeeklyMealPlanScreen> {
+  static const _days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  static const _mealTypes = ['breakfast', 'lunch', 'treat'];
+
+  late DateTime _weekStart;
+  final Map<String, TextEditingController> _controllers = {};
+  String? _lastLoadedDocId;
+  bool _isSaving = false;
+
+  static DateTime _mondayOf(DateTime date) =>
+      DateTime(date.year, date.month, date.day - (date.weekday - 1));
+
+  String get _docId =>
+      '${widget.daycareId}_${_weekStart.toIso8601String().substring(0, 10)}';
+
+  @override
+  void initState() {
+    super.initState();
+    _weekStart = _mondayOf(DateTime.now());
+    for (final day in _days) {
+      for (final meal in _mealTypes) {
+        _controllers['${day}_$meal'] = TextEditingController();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in _controllers.values) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  void _populateControllers(Map<String, dynamic>? data) {
+    final days = data?['days'] as Map<String, dynamic>? ?? {};
+    for (final day in _days) {
+      final dayData = days[day] as Map<String, dynamic>? ?? {};
+      for (final meal in _mealTypes) {
+        _controllers['${day}_$meal']?.text = dayData[meal]?.toString() ?? '';
+      }
+    }
+    _lastLoadedDocId = _docId;
+  }
+
+  Future<void> _save(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    setState(() => _isSaving = true);
+    try {
+      final days = <String, dynamic>{
+        for (final day in _days)
+          day: {
+            for (final meal in _mealTypes)
+              meal: _controllers['${day}_$meal']?.text.trim() ?? '',
+          },
+      };
+      await FirebaseFirestore.instance
+          .collection('meal_plans')
+          .doc(_docId)
+          .set({
+            'daycare_id': widget.daycareId,
+            'week_start': Timestamp.fromDate(_weekStart),
+            'days': days,
+          });
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.tr('mealPlanSaved'))));
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.tr('weeklyMealPlan')),
+        backgroundColor: Colors.orange.shade400,
+        foregroundColor: Colors.white,
+        actions: [
+          languageToggleAction(context, color: Colors.white),
+          if (widget.canEdit)
+            _isSaving
+                ? const Padding(
+                    padding: EdgeInsets.all(14),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                : IconButton(
+                    icon: const Icon(Icons.save),
+                    tooltip: l10n.tr('saveMealPlan'),
+                    onPressed: () => _save(context),
+                  ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // ── Week navigation ──────────────────────────────────────────
+          Container(
+            color: Colors.orange.shade50,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.chevron_left),
+                  onPressed: () => setState(() {
+                    _weekStart = _weekStart.subtract(const Duration(days: 7));
+                    _lastLoadedDocId = null;
+                  }),
+                ),
+                Text(
+                  l10n.tr('weekOf', {'date': _formatDate(_weekStart)}),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.chevron_right),
+                  onPressed: () => setState(() {
+                    _weekStart = _weekStart.add(const Duration(days: 7));
+                    _lastLoadedDocId = null;
+                  }),
+                ),
+              ],
+            ),
+          ),
+          // ── Day cards ────────────────────────────────────────────────
+          Expanded(
+            child: StreamBuilder<DocumentSnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('meal_plans')
+                  .doc(_docId)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final data =
+                    snapshot.hasData && (snapshot.data?.exists ?? false)
+                    ? snapshot.data!.data() as Map<String, dynamic>?
+                    : null;
+
+                // Populate edit controllers once per week change
+                if (widget.canEdit && _lastLoadedDocId != _docId) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) _populateControllers(data);
+                  });
+                }
+
+                if (!widget.canEdit && data == null) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Text(
+                        l10n.tr('noMealPlanYet'),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    ),
+                  );
+                }
+
+                final savedDays = data?['days'] as Map<String, dynamic>? ?? {};
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  itemCount: _days.length,
+                  itemBuilder: (context, i) {
+                    final day = _days[i];
+                    final dayDate = _weekStart.add(Duration(days: i));
+                    final savedDay =
+                        savedDays[day] as Map<String, dynamic>? ?? {};
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${l10n.tr(day.toLowerCase())}  •  ${_formatDate(dayDate)}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            const Divider(height: 18),
+                            _mealRow(
+                              l10n,
+                              day,
+                              'breakfast',
+                              savedDay,
+                              Icons.free_breakfast_outlined,
+                              Colors.orange.shade600,
+                            ),
+                            const SizedBox(height: 10),
+                            _mealRow(
+                              l10n,
+                              day,
+                              'lunch',
+                              savedDay,
+                              Icons.lunch_dining,
+                              Colors.teal.shade600,
+                            ),
+                            const SizedBox(height: 10),
+                            _mealRow(
+                              l10n,
+                              day,
+                              'treat',
+                              savedDay,
+                              Icons.cake_outlined,
+                              Colors.pink.shade400,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _mealRow(
+    AppLocalizations l10n,
+    String day,
+    String meal,
+    Map<String, dynamic> savedDay,
+    IconData icon,
+    Color color,
+  ) {
+    final labelKey = meal == 'treat' ? 'afterLunchTreat' : meal;
+    if (widget.canEdit) {
+      return Row(
+        children: [
+          Icon(icon, color: color, size: 22),
+          const SizedBox(width: 10),
+          Expanded(
+            child: TextField(
+              controller: _controllers['${day}_$meal'],
+              decoration: InputDecoration(
+                labelText: l10n.tr(labelKey),
+                isDense: true,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+    // Read-only view
+    final value = savedDay[meal]?.toString() ?? '';
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: color, size: 22),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.tr(labelKey),
+                style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+              ),
+              Text(
+                value.isEmpty ? '–' : value,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
