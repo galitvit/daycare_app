@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:file_picker/file_picker.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -354,7 +355,17 @@ class AppLocalizations {
       'thursday': 'Thursday',
       'friday': 'Friday',
       'saturday': 'Saturday',
-
+      'importantDocuments': 'Important Documents',
+      'viewDocuments': 'Important Documents',
+      'uploadDocument': 'Upload Document',
+      'downloadDocument': 'Download',
+      'noDocumentsAvailable': 'No documents uploaded yet.',
+      'documentUploaded': 'Document uploaded successfully.',
+      'uploadFailed': 'Upload failed.',
+      'selectFile': 'Select File',
+      'deleteDocument': 'Delete Document',
+      'deleteDocumentConfirm': 'Delete this document?',
+      'documentDeleted': 'Document deleted.',
     },
     'he': {
       'daycareApp': 'אפליקציית מעון',
@@ -508,6 +519,17 @@ class AppLocalizations {
       'thursday': 'יום חמישי',
       'friday': 'יום שישי',
       'saturday': 'יום שבת',
+      'importantDocuments': 'מסמכים חשובים',
+      'viewDocuments': 'מסמכים חשובים',
+      'uploadDocument': 'העלה מסמך',
+      'downloadDocument': 'הורד',
+      'noDocumentsAvailable': 'לא הועלו מסמכים עדיין.',
+      'documentUploaded': 'מסמך הועלה בהצלחה.',
+      'uploadFailed': 'ההעלאה נכשלה.',
+      'selectFile': 'בחר קובץ',
+      'deleteDocument': 'מחק מסמך',
+      'deleteDocumentConfirm': 'למחוק את המסמך הזה?',
+      'documentDeleted': 'המסמך נמחק.',
     },
   };
 }
@@ -2237,6 +2259,17 @@ class TeacherDashboard extends StatelessWidget {
                 ),
               ),
               IconButton(
+                icon: const Icon(Icons.description),
+                tooltip: l10n.tr('importantDocuments'),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        DocumentsScreen(daycareId: daycareId, canEdit: true),
+                  ),
+                ),
+              ),
+              IconButton(
                 icon: const Icon(Icons.logout),
                 onPressed: () => FirebaseAuth.instance.signOut(),
               ),
@@ -2765,6 +2798,30 @@ class ParentDashboard extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => WeeklyMealPlanScreen(
+                              daycareId: firstDaycareId,
+                              canEdit: false,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Card(
+                      margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                      color: Colors.purple.withOpacity(0.08),
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.description,
+                          color: Colors.purple,
+                        ),
+                        title: Text(
+                          l10n.tr('viewDocuments'),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DocumentsScreen(
                               daycareId: firstDaycareId,
                               canEdit: false,
                             ),
@@ -4113,7 +4170,14 @@ class WeeklyMealPlanScreen extends StatefulWidget {
 }
 
 class _WeeklyMealPlanScreenState extends State<WeeklyMealPlanScreen> {
-  static const _days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  static const _days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+  ];
   static const _mealTypes = ['breakfast', 'lunch', 'treat'];
 
   late DateTime _weekStart;
@@ -4121,8 +4185,10 @@ class _WeeklyMealPlanScreenState extends State<WeeklyMealPlanScreen> {
   String? _lastLoadedDocId;
   bool _isSaving = false;
 
-  static DateTime _mondayOf(DateTime date) =>
-      DateTime(date.year, date.month, date.day - (date.weekday - 1));
+  static DateTime _sundayOf(DateTime date) {
+    final offset = date.weekday % 7; // Mon=1…Sun=0
+    return DateTime(date.year, date.month, date.day - offset);
+  }
 
   String get _docId =>
       '${widget.daycareId}_${_weekStart.toIso8601String().substring(0, 10)}';
@@ -4130,7 +4196,7 @@ class _WeeklyMealPlanScreenState extends State<WeeklyMealPlanScreen> {
   @override
   void initState() {
     super.initState();
-    _weekStart = _mondayOf(DateTime.now());
+    _weekStart = _sundayOf(DateTime.now());
     for (final day in _days) {
       for (final meal in _mealTypes) {
         _controllers['${day}_$meal'] = TextEditingController();
@@ -4265,7 +4331,6 @@ class _WeeklyMealPlanScreenState extends State<WeeklyMealPlanScreen> {
                     ? snapshot.data!.data() as Map<String, dynamic>?
                     : null;
 
-                // Populate edit controllers once per week change
                 if (widget.canEdit && _lastLoadedDocId != _docId) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (mounted) _populateControllers(data);
@@ -4401,6 +4466,319 @@ class _WeeklyMealPlanScreenState extends State<WeeklyMealPlanScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// DocumentsScreen: Teacher uploads & manages documents; Parents view & download
+class DocumentsScreen extends StatefulWidget {
+  final String daycareId;
+  final bool canEdit;
+
+  const DocumentsScreen({
+    required this.daycareId,
+    required this.canEdit,
+    super.key,
+  });
+
+  @override
+  State<DocumentsScreen> createState() => _DocumentsScreenState();
+}
+
+class _DocumentsScreenState extends State<DocumentsScreen> {
+  String? _selectedFileName;
+  bool _uploading = false;
+
+  Future<void> _selectFile() async {
+    try {
+      final result = await FilePicker.platform.pickFiles();
+      if (result != null && result.files.isNotEmpty) {
+        final fileName = result.files.single.name;
+        setState(() => _selectedFileName = fileName);
+      }
+    } catch (e) {
+      if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.tr('uploadFailed')}: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _uploadDocument() async {
+    final l10n = AppLocalizations.of(context);
+
+    if (_selectedFileName == null || _selectedFileName!.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.tr('selectFile'))));
+      return;
+    }
+
+    setState(() => _uploading = true);
+
+    try {
+      await FirebaseFirestore.instance.collection('documents').add({
+        'daycare_id': widget.daycareId,
+        'file_name': _selectedFileName,
+        'uploaded_by': FirebaseAuth.instance.currentUser!.email,
+        'uploaded_at': Timestamp.now(),
+        'file_url': 'https://example.com/document.pdf', // Mock URL
+      });
+
+      setState(() => _selectedFileName = null);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.tr('documentUploaded'))));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.tr('uploadFailed'))));
+      }
+    } finally {
+      if (mounted) setState(() => _uploading = false);
+    }
+  }
+
+  Future<void> _deleteDocument(String docId) async {
+    final l10n = AppLocalizations.of(context);
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.tr('deleteDocument')),
+        content: Text(l10n.tr('deleteDocumentConfirm')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.tr('cancel')),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text(l10n.tr('delete')),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('documents')
+          .doc(docId)
+          .delete();
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.tr('documentDeleted'))));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error deleting document')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.tr('importantDocuments')),
+        backgroundColor: Colors.purple.shade400,
+        foregroundColor: Colors.white,
+      ),
+      body: Column(
+        children: [
+          if (widget.canEdit)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.attach_file, color: Colors.purple),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.tr('selectFile'),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              Text(
+                                _selectedFileName ?? 'No file selected',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: _selectedFileName == null
+                              ? null
+                              : () => setState(() => _selectedFileName = null),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _selectFile,
+                      icon: const Icon(Icons.browse_gallery),
+                      label: Text(l10n.tr('selectFile')),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _uploading || _selectedFileName == null
+                          ? null
+                          : _uploadDocument,
+                      icon: _uploading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.upload_file),
+                      label: Text(l10n.tr('uploadDocument')),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('documents')
+                  .where('daycare_id', isEqualTo: widget.daycareId)
+                  .orderBy('uploaded_at', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Text(l10n.tr('noDocumentsAvailable')),
+                    ),
+                  );
+                }
+
+                final docs = snapshot.data!.docs;
+
+                return ListView.builder(
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final doc = docs[index];
+                    final data = doc.data() as Map<String, dynamic>;
+                    final fileName = data['file_name'] ?? 'Unknown';
+                    final uploadedAt = data['uploaded_at'] as Timestamp?;
+                    final uploadedBy = data['uploaded_by'] ?? 'Unknown';
+
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.description,
+                          color: Colors.purple,
+                        ),
+                        title: Text(fileName),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Uploaded by: $uploadedBy',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            if (uploadedAt != null)
+                              Text(
+                                'Date: ${_formatDate(uploadedAt.toDate())}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                          ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (!widget.canEdit)
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.download,
+                                  color: Colors.blue,
+                                ),
+                                tooltip: l10n.tr('downloadDocument'),
+                                onPressed: () {
+                                  // In a real app, this would download the file
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Download: $fileName'),
+                                    ),
+                                  );
+                                },
+                              ),
+                            if (widget.canEdit)
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                                tooltip: l10n.tr('deleteDocument'),
+                                onPressed: () => _deleteDocument(doc.id),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
