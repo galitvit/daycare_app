@@ -8,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:file_picker/file_picker.dart';
 import 'firebase_options.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -4486,12 +4488,12 @@ class DocumentsScreen extends StatefulWidget {
 }
 
 class _DocumentsScreenState extends State<DocumentsScreen> {
-  String? _selectedFileName;
+  PlatformFile? _selectedFile;
   bool _uploading = false;
 
   // 1. Declare the stream variable
   late Stream<QuerySnapshot> _documentsStream;
-  
+
   @override
   void initState() {
     super.initState();
@@ -4504,10 +4506,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   Future<void> _selectFile() async {
     try {
-      final result = await FilePicker.platform.pickFiles();
+      // Added withData: true to help with web compatibility if you build for web later!
+      final result = await FilePicker.platform.pickFiles(withData: kIsWeb); 
       if (result != null && result.files.isNotEmpty) {
-        final fileName = result.files.single.name;
-        setState(() => _selectedFileName = fileName);
+        setState(() => _selectedFile = result.files.single);
       }
     } catch (e) {
       if (mounted) {
@@ -4522,36 +4524,54 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   Future<void> _uploadDocument() async {
     final l10n = AppLocalizations.of(context);
 
-    if (_selectedFileName == null || _selectedFileName!.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.tr('selectFile'))));
+    if (_selectedFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.tr('selectFile')))
+      );
       return;
     }
 
     setState(() => _uploading = true);
 
     try {
+      // 1. Create a unique path in Firebase Storage (daycares/DAYCARE_ID/documents/TIMESTAMP_FILENAME)
+      final storageRef = FirebaseStorage.instance.ref().child(
+        'daycares/${widget.daycareId}/documents/${DateTime.now().millisecondsSinceEpoch}_${_selectedFile!.name}'
+      );
+
+      TaskSnapshot uploadTask;
+
+      // 2. Upload the file (handles both Web and Mobile platforms)
+      if (kIsWeb) {
+        uploadTask = await storageRef.putData(_selectedFile!.bytes!);
+      } else {
+        uploadTask = await storageRef.putFile(File(_selectedFile!.path!));
+      }
+
+      // 3. Get the REAL secure download URL
+      final realFileUrl = await uploadTask.ref.getDownloadURL();
+
+      // 4. Save to Firestore just like before, but with the real URL
       await FirebaseFirestore.instance.collection('documents').add({
         'daycare_id': widget.daycareId,
-        'file_name': _selectedFileName,
+        'file_name': _selectedFile!.name,
         'uploaded_by': FirebaseAuth.instance.currentUser!.email,
         'uploaded_at': Timestamp.now(),
-        'file_url': 'https://example.com/document.pdf', // Mock URL
+        'file_url': realFileUrl, // <-- The real link!
       });
 
-      setState(() => _selectedFileName = null);
+      setState(() => _selectedFile = null); // Clear the selection
 
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.tr('documentUploaded'))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.tr('documentUploaded')))
+        );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.tr('uploadFailed'))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.tr('uploadFailed')}: $e'))
+        );
       }
     } finally {
       if (mounted) setState(() => _uploading = false);
@@ -4641,7 +4661,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                                 ),
                               ),
                               Text(
-                                _selectedFileName ?? 'No file selected',
+                                _selectedFile?.name ?? 'No file selected', // <-- Updated
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
@@ -4654,9 +4674,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.clear),
-                          onPressed: _selectedFileName == null
+                          onPressed: _selectedFile == null // <-- Updated
                               ? null
-                              : () => setState(() => _selectedFileName = null),
+                              : () => setState(() => _selectedFile = null), // <-- Updated
                         ),
                       ],
                     ),
@@ -4674,7 +4694,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: _uploading || _selectedFileName == null
+                      onPressed: _uploading || _selectedFile == null
                           ? null
                           : _uploadDocument,
                       icon: _uploading
@@ -4770,6 +4790,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            // 1. The SINGLE Download button for Parents
                             if (!widget.canEdit)
                               IconButton(
                                 icon: const Icon(
@@ -4777,14 +4798,33 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                                   color: Colors.blue,
                                 ),
                                 tooltip: l10n.tr('downloadDocument'),
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Download: $fileName'),
-                                    ),
-                                  );
+                                onPressed: () async {
+                                  // Grab the URL from Firestore
+                                  final fileUrl = data['file_url']?.toString();
+                                  
+                                  if (fileUrl != null && fileUrl.isNotEmpty) {
+                                    final uri = Uri.parse(fileUrl);
+                                    if (await canLaunchUrl(uri)) {
+                                      // Launch it in the phone's default browser/viewer
+                                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                    } else {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Could not open file.')),
+                                        );
+                                      }
+                                    }
+                                  } else {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('File URL is missing.')),
+                                      );
+                                    }
+                                  }
                                 },
                               ),
+
+                            // 2. The SINGLE Delete button for Teachers
                             if (widget.canEdit)
                               IconButton(
                                 icon: const Icon(
